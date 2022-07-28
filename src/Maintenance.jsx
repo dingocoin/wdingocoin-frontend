@@ -20,7 +20,7 @@ export default function Maintenance() {
           <Navbar.Brand href="#home" className="navbar-brand">
             <img alt="" src={DingocoinLogo} />
             <span>DINGOCOIN</span>
-            <span className="navbar-brand-subtitle"> Wrap</span>
+            <span className="navbar-brand-subtitle"> WRAP</span>
           </Navbar.Brand> 
         </Container>
       </Navbar>
