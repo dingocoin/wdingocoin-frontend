@@ -139,12 +139,14 @@ function OnboardingButton(props) {
           ? "Connect Phantom wallet to convert"
           : wallet.publicKey.toBase58()}
       </button>
+      <br /> <br />
       <p className="warning">
-        WARNING:<br />
+        <small>WARNING:<br />
         SOL's SPL token is currently experiencing some bugs in minting.<br />
         Hence, all mints will be suspended until SOL fixes the bug.<br /> <br />
         Please REFRAIN FROM DEPOSITING YOUR DINGOCOINS.<br /> <br />
         If you have deposited Dingocoins but your wDingocoins did not get minted, please contact us on Discord.
+      </small>
       </p>
       {typeof account !== "undefined" && (
         <button
@@ -161,7 +163,7 @@ function OnboardingButton(props) {
   );
 }
 
-    // { location: "n7.dingocoin.org", port: 8443 }, // dead node removed
+// { location: "n7.dingocoin.org", port: 8443 }, // dead node removed
 function SolController() {
   const AUTHORITY_NODES = [
     { location: "n5.dingocoin.org", port: 8443 },
@@ -500,6 +502,7 @@ function SolController() {
             Visit Dingocoin
           </a>
           <br />
+          <br />
           <OnboardingButton
             provider={provider}
             onWalletChange={onWalletChange}
@@ -730,13 +733,11 @@ function SolController() {
           </section>
         </div>
       )}
-
       <hr />
-
       <section className="section-a">
-        <h3>SOL Custodian Status</h3>
+        <h3>SOL Custodian Status</h3> <br />
         <h5>
-          Status of Authority Nodes: <br />
+          Status of Authority Nodes: <br /> <br />
           {aliveNodes === null && <div className="loader"></div>}
           <b>
             {aliveNodes &&
@@ -750,7 +751,8 @@ function SolController() {
           </b>
         </h5>
         {aliveNodes !== null && (
-          <p>
+          
+          <p><br />
             (Nodes not online? Our load protection system was probably triggered
             by too many of your requests. Please try again in a few minutes.)
           </p>
