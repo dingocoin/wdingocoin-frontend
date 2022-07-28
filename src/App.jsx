@@ -1,9 +1,9 @@
 import "./App.scss";
 import BscController from "./BscController";
 import SolController from "./SolController";
-import React from "react";
 import ReactGA from "react-ga";
 
+// Controls.
 import {
   Navbar,
   Nav,
@@ -12,89 +12,114 @@ import {
   DropdownButton,
   Row
 } from "react-bootstrap";
-import DingocoinLogo from "./assets/img/wDingocoin.png";
-import MaintLogo from "./assets/img/Comp-1_1.gif";
 
+// Assets.
+import FadeInSection from "./FadeInSection";
+import DingocoinLogo from "./assets/img/wDingocoin.png";
+
+import React from "react";
 import { BrowserRouter as Router } from "react-router-dom";
+
 import Maintenance from "./Maintenance";
 
 export default function App() {
-  
-  const [controller, setController] = React.useState(null);
-
+ // GA Analytics, Uncomment below, add your GA Measurement ID 	
 {/*
-  ReactGA.initialize("UA-210617812-1");
+  ReactGA.initialize("ID-HERE");  <-- Enter GA Measurement ID Here
   ReactGA.pageview(window.location.pathname + window.location.search);
 
   const [location, setLocation] = React.useState(null);
   React.useEffect(() => {
     setLocation(window.location.pathname);
   }, []);
-  React.useEffect(() => {}, [location]);
-*/}
+  React.useEffect(() => {}, [location]); */}
 
-  // Maint Mode Toggle
+const [controller, setController] = React.useState(null);
   
-  {/* Maint Mode Toggle -- true = on  | false = off */}
-
-  const maintenance = true;  {/*  < --- Toggle On|Off Here.  */}
+{/* Maint Mode Toggle  'const maintenance' = -- true = on  | false = off */}
+  const maintenance = false; 
   return (
     <Router>
       {maintenance ? (
         <Maintenance />
       ) : (
-    <div className="App">
-      <Navbar className="navbar" bg="dark" expand="lg" sticky="top">
-        <Container>
-          <Navbar.Brand href="#home" className="navbar-brand">
-            <img alt="" src={DingocoinLogo} />
-            <span>DINGOCOIN</span>
-            <span className="navbar-brand-subtitle"> WRAP</span>
-          </Navbar.Brand>
-          <Navbar.Toggle aria-controls="basic-navbar-nav" />
-          <Navbar.Collapse>
+              <div className="App">
+        <Navbar className="navbar" bg="dark" expand="lg" sticky="top">
+          <Container>
+            <Navbar.Brand href="/" className="navbar-brand align-items-center">
+              <img alt="" src={DingocoinLogo} />
+              <span>DINGOCOIN</span>
+              <span className="navbar-brand-subtitle"> Wrap</span>
+            </Navbar.Brand>
+            <Navbar.Toggle aria-controls="basic-navbar-nav" />
+            <Navbar.Collapse>
             <Nav className="ms-auto">
               <Nav.Link
                 href="https://www.dingocoin.org"
                 target="_blank"
                 rel="noreferrer"
               >
-                <b>Visit Dingocoin</b>
+              <b>Visit Dingocoin</b>
               </Nav.Link>
             </Nav>
           </Navbar.Collapse>
-        </Container>
-      </Navbar>
-      <header className="App-header">
+          </Container>
+        </Navbar>
+        <header id="home" className="masthead">
         <Container>
-         <Row>
-            <div className="mt-4"></div> 
-          </Row> <br />
+          {/* Desktop view */}
+          <div className="d-none d-lg-block">
+            <div className="d-flex flex-row py-5">
+              <div className="d-flex flex-column me-auto my-4">
+                <h4 className="title text-center">
+                  Wrap Dingocoin with SOL or BSC
+                </h4>
+                <h6 className="text-center">
+                  Stable, Realiable & Great Exchange Rate 
+                </h6>
+              </div>
+            </div>
+           </div>
+          {/* Mobile */}
+          <div className="d-lg-none">
+            <div className="d-flex flex-column py-5">
+              <div className="d-flex flex-column me-auto mt-4 mb-auto">
+                <h2 className="title text-center">
+                  Wrap Dingocoin with SOL or BSC
+                </h2><br />
+                <h4 className="text-center">
+                  Stable, Realiable & Great Exchange Rate 
+                </h4>
+              
+              </div>
+            </div>
+          </div>
         </Container>
-        <Container>
-          <Row>
-            <h1 className="mt-4">wDingocoin Custodian</h1> <br /><br /><br /> 
-          </Row>
-          <Row>
-            <div className="header-logos">
-              <img src="wDingocoin.png" alt="wDingocoin Logo"></img>
-              <span>&nbsp;⇌&nbsp;</span>
-              <img src="Dingocoin.png" alt="Dingocoin Logo"></img>
-            </div> <br />
-          </Row> <br /> 
-          <Row>
+       </header>
+       <section className="features">
+        <Container className="py-5 mt-5">
+          <FadeInSection>
+            <h2 className="mb-3 text-center">wDingocoin Custodian</h2>
+            <h5 className="mb-3 text-center"><strong>What Are Wrapped Coins?</strong></h5>
+            <h5 className="mb-3 ">
+            <p>A wrapped crypto token is a converted version of a cryptocurrency or asset that functions on a network other 
+            than the original asset’s blockchain. Each wrapped token has the same value as the asset it represents and is 
+            easily interchangeable.</p>
+            <p>Wrapped Coins essentially represent crypto assets on non-native blockchains. These coins 
+            are “wrapped” because they are inserted into a wrapper or digital vault that allows the wrapped version to operate 
+            on a different blockchain.
+           </p>
+           </h5>
+            <br />
+            <h5 className="mb-3 text-center">Exchange Rate</h5>
+            <br />
+            <h5 className="mb-3 text-center">
             <p className="mb-0">
-              1 wDingocoin = 1{" "}
-              <a target="_blank" href="https://dingocoin.org" rel="noreferrer">
-                Dingocoin
-              </a>
-            <br /> 
-            <br />
-            <p>Select Network Below</p>
-            <br />
+              1 wDingocoin = 1 Dingocoin
             </p>
-          </Row>
-          <Row>
+            </h5>
+            <br />
+            <h5 className="mb-3 text-center">
             <DropdownButton
               title={
                 controller === null
@@ -120,17 +145,26 @@ export default function App() {
                 Solana (SOL)
               </Dropdown.Item>
             </DropdownButton>
-          <br /> <br />
-          </Row> <br /><br /><br /><br />
-        
+          </h5>
+	      </FadeInSection>
         </Container>
-      </header> 
-      {controller === "bsc" && <BscController />}
-      {controller === "sol" && <SolController />}
-      <section className="section-footer">
-        <h6> Copyright © The Dingocoin Project 2022 </h6>
+      </section>  
+      <section>
+		<Container>
+		<h5 className="mt-3 text-center">
+        {controller === "bsc" && <BscController />}
+      	{controller === "sol" && <SolController />}
+        </h5>
+        </Container>
       </section>
-    </div>
+       <section className="section-footer text-center">
+            <Row>
+              <span>
+                <b>© The Dingocoin Project 2021 - 2022</b> 
+              </span>
+            </Row>
+        </section>
+      </div>
       )}
     </Router>
   );
