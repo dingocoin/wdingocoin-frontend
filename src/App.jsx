@@ -49,7 +49,7 @@ const [controller, setController] = React.useState(null);
             <Navbar.Brand href="/" className="navbar-brand align-items-center">
               <img alt="" src={DingocoinLogo} />
               <span>DINGOCOIN</span>
-              <span className="navbar-brand-subtitle"> WRAP</span>
+              <span className="navbar-brand-subtitle"> Wrap</span>
             </Navbar.Brand>
             <Navbar.Toggle aria-controls="basic-navbar-nav" />
             <Navbar.Collapse>
