@@ -752,7 +752,7 @@ function BscController() {
           <OnboardingButton onAccountChange={onAccountChange} />
         </Container>
       </header>
-
+      <br /> <br />	
       {wallet && aliveNodes && (
         <div>
           <section className="section-b">
@@ -979,11 +979,10 @@ function BscController() {
       )}
 
       <hr />
-
       <section className="section-a">
-        <h3>BSC Custodian Status</h3>
+        <h3>BSC Custodian Status</h3> <br />
         <h5>
-          Status of Authority Nodes: <br />
+          Status of Authority Nodes: <br /> <br />
           {aliveNodes === null && <div className="loader"></div>}
           <b>
             {aliveNodes &&
@@ -997,14 +996,15 @@ function BscController() {
           </b>
         </h5>
         {aliveNodes !== null && (
-          <p>
-            (Nodes not online? Our load protection system was probably triggered
-            by too many of your requests. Please try again in a few minutes.)
+          <p> <br />
+          <small>(Nodes not online? Our load protection system was probably triggered
+          by too many of your requests. Please try again in a few minutes.)</small>
           </p>
         )}
         {aliveNodes !== null && stats === null && (
           <div className="loader"></div>
         )}
+       <br />
         {stats && (
           <div>
             <table>
