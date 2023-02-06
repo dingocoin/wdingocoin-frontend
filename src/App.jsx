@@ -102,7 +102,7 @@ const [controller, setController] = React.useState(null);
             <h2 className="mb-3 text-center">wDingocoin Custodian</h2>
             <h5 className="mb-3 text-center"><strong>What Are Wrapped Coins?</strong></h5>
             <h5 className="mb-3 ">
-            <p>A wrapped crypto token is a converted version of a cryptocurrency or asset that functions on a network other 
+            <p>A wrapped crypto coin is a converted version of a cryptocurrency or asset that functions on a network other 
             than the original asset’s blockchain. Each wrapped token has the same value as the asset it represents and is 
             easily interchangeable.</p>
             <p>Wrapped Coins essentially represent crypto assets on non-native blockchains. These coins 
