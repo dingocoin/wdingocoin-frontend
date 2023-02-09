@@ -102,13 +102,16 @@ const [controller, setController] = React.useState(null);
             <h2 className="mb-3 text-center">wDingocoin Custodian</h2>
             <h5 className="mb-3 text-center"><strong>What Are Wrapped Coins?</strong></h5>
             <h5 className="mb-3 ">
-            <p>A wrapped crypto token is a converted version of a cryptocurrency or asset that functions on a network other 
-            than the original asset’s blockchain. Each wrapped token has the same value as the asset it represents and is 
-            easily interchangeable.</p>
-            <p>Wrapped Coins essentially represent crypto assets on non-native blockchains. These coins 
-            are “wrapped” because they are inserted into a wrapper or digital vault that allows the wrapped version to operate 
-            on a different blockchain.
-           </p>
+            <p>A wrapped Dingocoin (wdingocoin) is a type of ERC-20 token on a Smart Contract chain such as the Ethereum, Binance Smart Chain, Polygon, Solana, or others, that 
+		represents the value of one DingoCoin. </p>
+            <p>1 Dingocoin = 1 wDingoCoin. The process of creating wDingocoin involves taking actual DingoCoin and "wrapping" it in a smart contract, allowing it to be used as a 
+	    	token within the chosen Smart Contract network.</p>
+	    <p>By wrapping Dingocoin in this way, the liquidity and stability of DingoCoin is brought to the Ethereum, BSC, Polygon, Solana, or other ecosystem, providing a 
+	       bridge between the two networks. The result is a digital asset that can be easily traded, used to pay for goods and services, and accessed within the decentralised 
+	       applications built on the Smart Contract platform.With wDingocoin, users can take advantage of the best of both networks, leveraging the stability of  DingoCoin and the versatility of today's Smart Contract platforms.</p>
+           <p>Please note: We have heard about a similarly named token (Dingo Token) that some have mistaken for us! They are not us. They are a scam! <br>
+              Our Official Coin and Token are DingoCoin and wDingocoin, suffixed as wDingocoin-BSC for the wrapped Dingocoin on the Binance Smart Chain, or wDingocoin-SOL on the Solana blockchain. Others are planned 
+	      or in development, but always check the validity of any token, and make sure you are dealing with a genuine Dingocoin token.</p>	
            </h5>
             <br />
             <h5 className="mb-3 text-center">Exchange Rate</h5>
