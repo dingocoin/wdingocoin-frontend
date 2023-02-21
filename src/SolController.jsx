@@ -10,7 +10,7 @@ const TOKEN_PUB_KEY = new web3.PublicKey(
   "6VYF5jXq6rfq4QRgGMG6co7b1Ev1Lj7KSbHBxfQ9e1L3"
 );
 const connection = new web3.Connection(
-  "https://try-rpc.mainnet.solana.blockdaemon.tech",
+  "https://solana-mainnet.rpc.extrnode.com",
   "confirmed"
 );
 
