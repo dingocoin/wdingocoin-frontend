@@ -55,7 +55,7 @@ const [controller, setController] = React.useState(null);
             <Navbar.Collapse>
             <Nav className="ms-auto">
               <Nav.Link
-                href="https://www.dingocoin.org"
+                href="https://www.dingocoin.com"
                 target="_blank"
                 rel="noreferrer"
               >
@@ -160,7 +160,7 @@ const [controller, setController] = React.useState(null);
        <section className="section-footer text-center">
             <Row>
               <span>
-                <b>© The Dingocoin Project 2021 - 2022</b> 
+                <b>© The Dingocoin Project 2021 - 2023</b> 
               </span>
             </Row>
         </section>
