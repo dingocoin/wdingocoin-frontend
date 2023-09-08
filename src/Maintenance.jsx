@@ -41,7 +41,7 @@ export default function Maintenance() {
           <Container>
             <Row>
               <span>
-                <b>© The Dingocoin Project 2021 - 2022w<br /></b>
+                <b>© The Dingocoin Project 2021 - 2023<br /></b>
               </span>
             </Row>  
           </Container>
