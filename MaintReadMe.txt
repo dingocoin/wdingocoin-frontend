@@ -1,52 +1,47 @@
-THIS IS FOR FRONTEND ONLY and does nothing to backend functioning or logic
+This Guide and support code is to add hot-swapping Maint-Mode ( AKA- Hot Switch) capability without having to rebuild the entire application. The idea is to enable hot module replacement (HMR), which allows you to inject updated modules into the running application without a full rebuild.
 
-## Step 1
-********* I CAN NOT STRESS ENOUGH VERIFY everything is there from current production builds *************
+Step One 
+Install React Hot Loader:
+React Hot Loader is a tool that enables hot module replacement for React components.
 
-## Step 2
-Run `yarn install` to install dependencies.
+Run:
+yarn add react-hot-loader
 
-## Step 3
-***** Compare to your existing project  Make sure everything is there *****
+Place babel.config file in the root of your project which will add the following configuration:
 
-## Step 4
-Merge this project with your existing dingocoin project 
+{
+  "presets": [
+    "@babel/preset-env",
+    "@babel/preset-react"
+  ],
+  "plugins": [
+    "react-hot-loader/babel"
+  ]
+}
 
-Run `yarn start`
+Update Main Application
+/src/index.jsx and save file.
 
-## Step 5
-Toggling Maint Mode On/Off
-In src/App.jsx
 
-Toggling Mode 
+Start server:
+yarn start
 
-{/*Toggle Maint Mode  const maintenance=   | true = Maint Mode on  |  false = Maint Mode Off*/}
-  const maintenance = false; <--------- Toggle true/false
+This would enable hot module replacement, and your changes to React components should be reflected in the running application without a full re-build.
+
+
+How to trigger:
+
+Code Section:
+/src/App.jsx
+Line 40
+
+
+{/* Maint Mode Toggle  'const maintenance' = -- true = on  | false = off */}
+  const maintenance = false;  <--- true or false
   return (
-    <>
+    <Router>
       {maintenance ? (
         <Maintenance />
-      ) : (
-thats it ! Maint Mode package added
+      ) ........
 
-## Step 6 
-Run `yarn start`
-
-Confirm Changes Are Working  Correctly with toggle
-
-## Step 7
-Run `yarn build`
-
-## Step 8
-Then serve in your normal method "(Node & Express) or Apache HTTP
-
-See https://create-react-app.dev/docs/deployment
-
-You will need to redeploy after toggling off/on 
-
-Notes: 
-File Changes
-/src/App.jsx
-
-Files Added 
-/assets/Comp-1_1.gif
+save, refresh browser :)
