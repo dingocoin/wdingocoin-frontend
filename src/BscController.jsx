@@ -50,29 +50,29 @@ const isValidDingocoinAddress = (x) => {
 
 const AUTHORITY_NODES = [
   {
-    location: "n0.dingocoin.org",
+    location: "n0.dingocoin.com",
     port: 8443,
-    walletAddress: "0x0bee89d055Bc18250C71B72B2e24EcF723e9a8ef",
+    walletAddress: "0xD456eB296F8448Df66745f9bd0e759a1b58a6D9d",
   },
   {
-    location: "n1.dingocoin.org",
+    location: "n1.dingocoin.com",
     port: 8443,
     walletAddress: "0xD14Bc59472b8f1fA5baA99a17855d06aD327dCae",
   },
   {
-    location: "n2.dingocoin.org",
+    location: "n2.dingocoin.com",
     port: 8443,
     walletAddress: "0x3279f7B244F0194fd359D5AC29359ca676193aDb",
   },
   {
-    location: "n3.dingocoin.org",
+    location: "n3.dingocoin.com",
     port: 8443,
     walletAddress: "0x9d046eDc2C80727259355E4CFBb8B72750348Ad9",
   },
   {
-    location: "n4.dingocoin.org",
+    location: "n4.dingocoin.com",
     port: 8443,
-    walletAddress: "0x5234B6a4df31598dc4B26183ad7C452E47AB267F",
+    walletAddress: "0xfe7141385E848274bba58E710C8c5D1c673Ef2Fe",
   },
 ];
 const AUTHORITY_THRESHOLD = 3;
@@ -744,7 +744,7 @@ function BscController() {
             className="button button4"
             target="_blank"
             rel="noreferrer"
-            href="https://dingocoin.org"
+            href="https://dingocoin.com"
           >
             Visit Dingocoin
           </a>
@@ -758,7 +758,7 @@ function BscController() {
           <section className="section-b">
             <h3>
               Convert{" "}
-              <a target="_blank" href="https://dingocoin.org" rel="noreferrer">
+              <a target="_blank" href="https://dingocoin.com" rel="noreferrer">
                 Dingocoin
               </a>{" "}
               → wDingocoin
@@ -845,7 +845,7 @@ function BscController() {
           <section className="section-b">
             <h3>
               Convert wDingocoin →{" "}
-              <a target="_blank" href="https://dingocoin.org" rel="noreferrer">
+              <a target="_blank" href="https://dingocoin.com" rel="noreferrer">
                 Dingocoin
               </a>
             </h3>
@@ -870,7 +870,7 @@ function BscController() {
                         <u>
                           <a
                             target="_blank"
-                            href="https://dingocoin.org"
+                            href="https://dingocoin.com"
                             rel="noreferrer"
                           >
                             Dingocoin
@@ -889,7 +889,7 @@ function BscController() {
                   <p>
                     <a
                       target="_blank"
-                      href="https://dingocoin.org"
+                      href="https://dingocoin.com"
                       rel="noreferrer"
                     >
                       Dingocoin
@@ -1013,7 +1013,7 @@ function BscController() {
                   <td className="long-header">
                     <a
                       target="_blank"
-                      href="https://dingocoin.org"
+                      href="https://dingocoin.com"
                       rel="noreferrer"
                     >
                       Dingocoin

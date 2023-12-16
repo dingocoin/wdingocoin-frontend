@@ -10,7 +10,7 @@ const TOKEN_PUB_KEY = new web3.PublicKey(
   "6VYF5jXq6rfq4QRgGMG6co7b1Ev1Lj7KSbHBxfQ9e1L3"
 );
 const connection = new web3.Connection(
-  web3.clusterApiUrl("mainnet-beta"),
+  "https://skilled-cool-county.solana-mainnet.discover.quiknode.pro/e0e83f0817db1d1e9c52f10380c7bd8d002d5ce2/",
   "confirmed"
 );
 
@@ -163,14 +163,14 @@ function OnboardingButton(props) {
   );
 }
 
-// { location: "n7.dingocoin.org", port: 8443 }, // dead node removed
+// { location: "n7.dingocoin.com", port: 8443 }, // dead node removed
 function SolController() {
   const AUTHORITY_NODES = [
-    { location: "n5.dingocoin.org", port: 8443 },
-    { location: "n6.dingocoin.org", port: 8443 },
-    { location: "n8.dingocoin.org", port: 8443 },
-    { location: "n9.dingocoin.org", port: 8443 },
-    { location: "n10.dingocoin.org", port: 8443 },
+    { location: "n5.dingocoin.com", port: 8443 },
+    { location: "n6.dingocoin.com", port: 8443 },
+    { location: "n8.dingocoin.com", port: 8443 },
+    { location: "n9.dingocoin.com", port: 8443 },
+    { location: "n10.dingocoin.com", port: 8443 },
   ];
   const authorityLink = (x) => {
     return `https://${x.location}:${x.port}`;
@@ -497,7 +497,7 @@ function SolController() {
             className="button button4"
             target="_blank"
             rel="noreferrer"
-            href="https://dingocoin.org"
+            href="https://dingocoin.com"
           >
             Visit Dingocoin
           </a>
@@ -517,7 +517,7 @@ function SolController() {
           <section className="section-b">
             <h3>
               Convert{" "}
-              <a target="_blank" href="https://dingocoin.org" rel="noreferrer">
+              <a target="_blank" href="https://dingocoin.com" rel="noreferrer">
                 Dingocoin
               </a>{" "}
               → wDingocoin
@@ -603,7 +603,7 @@ function SolController() {
           <section className="section-b">
             <h3>
               Convert wDingocoin →{" "}
-              <a target="_blank" href="https://dingocoin.org" rel="noreferrer">
+              <a target="_blank" href="https://dingocoin.com" rel="noreferrer">
                 Dingocoin
               </a>
             </h3>
@@ -628,7 +628,7 @@ function SolController() {
                         <u>
                           <a
                             target="_blank"
-                            href="https://dingocoin.org"
+                            href="https://dingocoin.com"
                             rel="noreferrer"
                           >
                             Dingocoin
@@ -647,7 +647,7 @@ function SolController() {
                   <p>
                     <a
                       target="_blank"
-                      href="https://dingocoin.org"
+                      href="https://dingocoin.com"
                       rel="noreferrer"
                     >
                       Dingocoin
@@ -768,7 +768,7 @@ function SolController() {
                   <td className="long-header">
                     <a
                       target="_blank"
-                      href="https://dingocoin.org"
+                      href="https://dingocoin.com"
                       rel="noreferrer"
                     >
                       Dingocoin
