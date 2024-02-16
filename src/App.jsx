@@ -3,7 +3,6 @@ import BscController from "./BscController";
 import SolController from "./SolController";
 import MumbaiController from "./MumbaiController";
 import MaticController from "./MaticController";
-
 import ReactGA from "react-ga";
 
 // Controls.
@@ -83,40 +82,6 @@ export default function App() {
                     </h6>
                   </div>
                 </div>
-              <div className="App">
-        <Navbar className="navbar" bg="dark" expand="lg" sticky="top">
-          <Container>
-            <Navbar.Brand href="/" className="navbar-brand align-items-center">
-              <img alt="" src={DingocoinLogo} />
-              <span>DINGOCOIN</span>
-              <span className="navbar-brand-subtitle"> Wrap</span>
-            </Navbar.Brand>
-            <Navbar.Toggle aria-controls="basic-navbar-nav" />
-            <Navbar.Collapse>
-            <Nav className="ms-auto">
-              <Nav.Link
-                href="https://www.dingocoin.com"
-                target="_blank"
-                rel="noreferrer"
-              >
-              <b>Visit Dingocoin</b>
-              </Nav.Link>
-            </Nav>
-          </Navbar.Collapse>
-          </Container>
-        </Navbar>
-        <header id="home" className="masthead">
-        <Container>
-          {/* Desktop view */}
-          <div className="d-none d-lg-block">
-            <div className="d-flex flex-row py-5">
-              <div className="d-flex flex-column me-auto my-4">
-                <h4 className="title text-center">
-                  Wrap Dingocoin with SOL or BSC
-                </h4>
-                <h6 className="text-center">
-                  Stable, Realiable & Great Exchange Rate 
-                </h6>
               </div>
               {/* Mobile */}
               <div className="d-lg-none">
@@ -215,12 +180,12 @@ export default function App() {
           <section className="section-footer text-center">
             <Row>
               <span>
-                <b>© The Dingocoin Project 2021 - 2024</b> 
-              </span>
-            </Row>
-          </section>
-        </div>
+                <b>© The Dingocoin Project 2021 - 2024</b>
+              </span >
+            </Row >
+          </section >
+        </div >
       )}
-    </Router>
+    </Router >
   );
 }
