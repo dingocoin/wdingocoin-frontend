@@ -58,11 +58,11 @@ export default function App() {
               <Navbar.Collapse>
                 <Nav className="ms-auto">
                   <Nav.Link
-                    href="https://www.dingocoin.com"
+                    href="https://wrap.dingocoin.com"
                     target="_blank"
                     rel="noreferrer"
                   >
-                    <b>Visit Dingocoin</b>
+                    <b>Visit wDingocoin</b>
                   </Nav.Link>
                 </Nav>
               </Navbar.Collapse>
