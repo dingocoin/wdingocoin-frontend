@@ -760,7 +760,7 @@ function MaticController() {
             className="button button1"
             target="_blank"
             rel="noreferrer"
-            href="https://app.uniswap.org/swap?chain=polygon"
+            href="https://birdeye.so/token/0x033BabaC01c4E3915cf71D24B6bFB58e606FdB80?chain=polygon"
           >
             wDingocoin (MATIC) Price
           </a>
