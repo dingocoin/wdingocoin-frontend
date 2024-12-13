@@ -75,10 +75,10 @@ export default function App() {
                 <div className="d-flex flex-row py-5">
                   <div className="d-flex flex-column me-auto my-4">
                     <h4 className="title text-center">
-                      Wrap Dingocoin with SOL or BSC
+                      Wrap Dingocoin with SOL, BSC, or Polygon
                     </h4>
                     <h6 className="text-center">
-                      Stable, Realiable & Great Exchange Rate
+                      Stable, Reliable & Great Exchange Rate
                     </h6>
                   </div>
                 </div>
@@ -88,10 +88,10 @@ export default function App() {
                 <div className="d-flex flex-column py-5">
                   <div className="d-flex flex-column me-auto mt-4 mb-auto">
                     <h2 className="title text-center">
-                      Wrap Dingocoin with SOL or BSC
+                      Wrap Dingocoin with SOL, BSC, or Polygon
                     </h2><br />
                     <h4 className="text-center">
-                      Stable, Realiable & Great Exchange Rate
+                      Stable, Reliable & Great Exchange Rate
                     </h4>
 
                   </div>
