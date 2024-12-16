@@ -752,8 +752,7 @@ function MaticController() {
             className="button button1"
             target="_blank"
             rel="noreferrer"
-            href="https://dingocoin.com"
-          // href="https://pancakeswap.finance/swap?outputCurrency=0x9b208b117B2C4F76C1534B6f006b033220a681A4"
+            href="https://app.uniswap.org/#/swap?chain=polygon&outputCurrency=0x033babac01c4e3915cf71d24b6bfb58e606fdb80"
           >
             Buy wDingocoin (MATIC)
           </a>
@@ -761,7 +760,7 @@ function MaticController() {
             className="button button1"
             target="_blank"
             rel="noreferrer"
-            href="https://dingocoin.com"
+            href="https://birdeye.so/token/0x033BabaC01c4E3915cf71D24B6bFB58e606FdB80?chain=polygon"
           >
             wDingocoin (MATIC) Price
           </a>
@@ -769,7 +768,6 @@ function MaticController() {
             className="button button2"
             target="_blank"
             rel="noreferrer"
-            // href="https://dingocoin.com"
             href={`https://polygonscan.com/token/${CONTRACT_ADDRESS}`}
           >
             wDingocoin (MATIC) Contract
