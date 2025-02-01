@@ -2,7 +2,7 @@ import "./App.scss";
 import BscController from "./BscController";
 import SolController from "./SolController";
 import MumbaiController from "./MumbaiController";
-import MaticController from "./MaticController";
+import PolygonController from './PolygonController';
 import ReactGA from "react-ga";
 
 // Controls.
@@ -106,10 +106,10 @@ export default function App() {
                 <h5 className="mb-3 text-center"><strong>What Are Wrapped Coins?</strong></h5>
                 <h5 className="mb-3 ">
                   <p>A wrapped crypto token is a converted version of a cryptocurrency or asset that functions on a network other
-                    than the original asset’s blockchain. Each wrapped token has the same value as the asset it represents and is
+                    than the original asset's blockchain. Each wrapped token has the same value as the asset it represents and is
                     easily interchangeable.</p>
                   <p>Wrapped Coins essentially represent crypto assets on non-native blockchains. These coins
-                    are “wrapped” because they are inserted into a wrapper or digital vault that allows the wrapped version to operate
+                    are "wrapped" because they are inserted into a wrapper or digital vault that allows the wrapped version to operate
                     on a different blockchain.
                   </p>
                 </h5>
@@ -140,10 +140,10 @@ export default function App() {
                     </Dropdown.Item>
                     <Dropdown.Item
                       onClick={() => {
-                        setController("Polygon (MATIC)");
+                        setController("Polygon (POL)");
                       }}
                     >
-                      Polygon (MATIC)
+                      Polygon (POL)
                     </Dropdown.Item>
                     {
                       testnetEnabled ?
@@ -171,7 +171,7 @@ export default function App() {
             <Container>
               <h5 className="mt-3 text-center">
                 {controller === "Binance Smart Chain (BSC)" && <BscController />}
-                {controller === "Polygon (MATIC)" && <MaticController />}
+                {controller === "Polygon (POL)" && <PolygonController />}
                 {controller === "Mumbai TESTNET" && <MumbaiController />}
                 {controller === "Solana (SOL)" && <SolController />}
               </h5>

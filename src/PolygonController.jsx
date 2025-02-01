@@ -359,31 +359,6 @@ function OnboardingButton(props) {
   const [account, setAccount] = React.useState(null);
   const onboarding = React.useRef();
 
-  // React.useEffect(() => {
-  //   async function checkNetwork() {
-  //     if (window.ethereum) {
-  //       const chainId = await window.ethereum.request({ method: 'eth_chainId' });
-  //       if (chainId !== '0x13881') { // Mumbai Matic Testnet network ID
-  //         if (window.confirm('WARNING: Metamask is not set to Matic Mumbai Testnet network!')) {
-  //           try {
-  //             await window.ethereum.request({
-  //               method: 'wallet_switchEthereumChain',
-  //               params: [{ chainId: '0x13881' }],
-  //             });
-  //             // window.location.reload()
-  //           } catch (error) {
-  //             console.error(error);
-  //           }
-  //         }
-  //       }
-  //     }
-  //   }
-  //   //check network in initial load and every 5 seconds after
-  //   checkNetwork();
-  //   const checkChainId = setInterval(async() => {checkNetwork()}, 5*1000);
-  //   return () => clearInterval(checkChainId);
-  // }, []);
-
   React.useEffect(() => {
     if (!onboarding.current) {
       onboarding.current = new MetaMaskOnboarding();
@@ -424,7 +399,7 @@ function OnboardingButton(props) {
   );
 }
 
-function MaticController() {
+function PolygonController() {
   const web3 = new Web3("https://polygon-rpc.com/");
   const contract = new web3.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS);
   async function post(link, data) {
@@ -623,7 +598,7 @@ function MaticController() {
   const onMint = async (depositAddress) => {
     if (window.ethereum) {
       const chainId = await window.ethereum.request({ method: 'eth_chainId' });
-      if (chainId !== '0x89') { // Mumbai Matic Testnet network ID
+      if (chainId !== '0x89') { // Polygon network ID
          return window.confirm('WARNING: Metamask is not set to Polygon network!')
       }
     }
@@ -752,27 +727,25 @@ function MaticController() {
             className="button button1"
             target="_blank"
             rel="noreferrer"
-            href="https://dingocoin.com"
-          // href="https://pancakeswap.finance/swap?outputCurrency=0x9b208b117B2C4F76C1534B6f006b033220a681A4"
+            href="https://app.uniswap.org/#/swap?chain=polygon&outputCurrency=0x033babac01c4e3915cf71d24b6bfb58e606fdb80"
           >
-            Buy wDingocoin (MATIC)
+            Buy wDingocoin (POL)
           </a>
           <a
             className="button button1"
             target="_blank"
             rel="noreferrer"
-            href="https://dingocoin.com"
+            href="https://dexscreener.com/polygon/0xe0b11d00b5c6b73931d1ae91016dab4f371fabe0"
           >
-            wDingocoin (MATIC) Price
+            wDingocoin (POL) Price
           </a>
           <a
             className="button button2"
             target="_blank"
             rel="noreferrer"
-            // href="https://dingocoin.com"
             href={`https://polygonscan.com/token/${CONTRACT_ADDRESS}`}
           >
-            wDingocoin (MATIC) Contract
+            wDingocoin (POL) Contract
           </a>
           <a
             className="button button4"
@@ -1107,4 +1080,4 @@ function MaticController() {
   );
 }
 
-export default MaticController;
+export default PolygonController;
