@@ -75,7 +75,7 @@ export default function App() {
                 <div className="d-flex flex-row py-5">
                   <div className="d-flex flex-column me-auto my-4">
                     <h4 className="title text-center">
-                      Wrap Dingocoin with SOL, BSC, or Polygon
+                      Wrap Dingocoin on Binance Smart Chain
                     </h4>
                     <h6 className="text-center">
                       Stable, Reliable & Great Exchange Rate
@@ -88,7 +88,7 @@ export default function App() {
                 <div className="d-flex flex-column py-5">
                   <div className="d-flex flex-column me-auto mt-4 mb-auto">
                     <h2 className="title text-center">
-                      Wrap Dingocoin with SOL, BSC, or Polygon
+                      Wrap Dingocoin on Binance Smart Chain
                     </h2><br />
                     <h4 className="text-center">
                       Stable, Reliable & Great Exchange Rate
@@ -138,30 +138,20 @@ export default function App() {
                     >
                       Binance Smart Chain (BSC)
                     </Dropdown.Item>
-                    <Dropdown.Item
+                    {/* <Dropdown.Item
                       onClick={() => {
                         setController("Polygon (POL)");
                       }}
                     >
                       Polygon (POL)
-                    </Dropdown.Item>
-                    {
-                      testnetEnabled ?
-                        <Dropdown.Item
-                          onClick={() => {
-                            setController("Mumbai TESTNET");
-                          }}
-                        >
-                          wtDingo (Mumbai)
-                        </Dropdown.Item>
-                        : null}
-                    <Dropdown.Item
+                    </Dropdown.Item> */}
+                    {/* <Dropdown.Item
                       onClick={() => {
                         setController("Solana (SOL)");
                       }}
                     >
                       Solana (SOL)
-                    </Dropdown.Item>
+                    </Dropdown.Item> */}
                   </DropdownButton>
                 </h5>
               </FadeInSection>
@@ -180,7 +170,7 @@ export default function App() {
           <section className="section-footer text-center">
             <Row>
               <span>
-                <b>© The Dingocoin Project 2021 - 2024</b>
+                <b>© The Dingocoin Project 2021 - 2025</b>
               </span >
             </Row >
           </section >
