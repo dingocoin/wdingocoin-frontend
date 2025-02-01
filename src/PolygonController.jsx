@@ -8,6 +8,40 @@ import { Container } from "react-bootstrap";
 
 const DECIMALS = 8;
 
+const AUTHORITY_NODES = [
+  {
+    location: "mn1.dingocoin.com",
+    port: 8443,
+    walletAddress: "0x72321c492EAA102C331C0EB64c9E4a72036f2f1d",
+  },
+  {
+    location: "wdingo.triplezen.org",
+    port: 8443,
+    walletAddress: "0x90c5951c839de0CC80138D7A47a3F1F0eE5828Ba",
+  },
+  {
+    location: "wdingomatic.mysterious-beard-tackles.com",
+    port: 8443,
+    walletAddress: "0xcceA32dDbd0b8c56904ED5Cf6Bed0260a753b90a",
+  },
+  {
+    location: "mn2.dingocoin.com",
+    port: 8443,
+    walletAddress: "0xfA3ba79a0266Fd0354547E4807b19bC8Cef0696C",
+  },
+  {
+    location: "mn3.dingocoin.com",
+    port: 8443,
+    walletAddress: "0x171922Ad1C671AaAB08A2EEFDf1F92cDB78cA6b4",
+  },
+];
+const AUTHORITY_THRESHOLD = 3;
+const authorityLink = (x) => {
+  return `https://${x.location}:${x.port}`;
+};
+
+const CONTRACT_ADDRESS = "0x033babac01c4e3915cf71d24b6bfb58e606fdb80";
+
 const toSatoshi = (x) => {
   let xs = x.toFixed(DECIMALS);
   xs = xs.substr(0, xs.length - DECIMALS - 1) + xs.slice(xs.length - DECIMALS);
@@ -47,40 +81,6 @@ const isValidDingocoinAddress = (x) => {
   const checksum = sha256(sha256(raw.slice(0, 21)));
   return raw.slice(21, 25).equals(checksum.slice(0, 4));
 };
-
-const AUTHORITY_NODES = [
-  {
-    location: "mn1.dingocoin.com",
-    port: 8443,
-    walletAddress: "0x72321c492EAA102C331C0EB64c9E4a72036f2f1d",
-  },
-  {
-    location: "wdingo.triplezen.org",
-    port: 8443,
-    walletAddress: "0x90c5951c839de0CC80138D7A47a3F1F0eE5828Ba",
-  },
-  {
-    location: "wdingomatic.mysterious-beard-tackles.com",
-    port: 8443,
-    walletAddress: "0xcceA32dDbd0b8c56904ED5Cf6Bed0260a753b90a",
-  },
-  {
-    location: "mn2.dingocoin.com",
-    port: 8443,
-    walletAddress: "0xfA3ba79a0266Fd0354547E4807b19bC8Cef0696C",
-  },
-  {
-    location: "mn3.dingocoin.com",
-    port: 8443,
-    walletAddress: "0x171922Ad1C671AaAB08A2EEFDf1F92cDB78cA6b4",
-  },
-];
-const AUTHORITY_THRESHOLD = 3;
-const authorityLink = (x) => {
-  return `https://${x.location}:${x.port}`;
-};
-
-const CONTRACT_ADDRESS = "0x033babac01c4e3915cf71d24b6bfb58e606fdb80";
 
 const CONTRACT_ABI = [
   { inputs: [], stateMutability: "nonpayable", type: "constructor" },
@@ -359,31 +359,6 @@ function OnboardingButton(props) {
   const [account, setAccount] = React.useState(null);
   const onboarding = React.useRef();
 
-  // React.useEffect(() => {
-  //   async function checkNetwork() {
-  //     if (window.ethereum) {
-  //       const chainId = await window.ethereum.request({ method: 'eth_chainId' });
-  //       if (chainId !== '0x13881') { // Mumbai Matic Testnet network ID
-  //         if (window.confirm('WARNING: Metamask is not set to Matic Mumbai Testnet network!')) {
-  //           try {
-  //             await window.ethereum.request({
-  //               method: 'wallet_switchEthereumChain',
-  //               params: [{ chainId: '0x13881' }],
-  //             });
-  //             // window.location.reload()
-  //           } catch (error) {
-  //             console.error(error);
-  //           }
-  //         }
-  //       }
-  //     }
-  //   }
-  //   //check network in initial load and every 5 seconds after
-  //   checkNetwork();
-  //   const checkChainId = setInterval(async() => {checkNetwork()}, 5*1000);
-  //   return () => clearInterval(checkChainId);
-  // }, []);
-
   React.useEffect(() => {
     if (!onboarding.current) {
       onboarding.current = new MetaMaskOnboarding();
@@ -424,7 +399,7 @@ function OnboardingButton(props) {
   );
 }
 
-function MaticController() {
+function PolygonController() {
   const web3 = new Web3("https://polygon-rpc.com/");
   const contract = new web3.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS);
   async function post(link, data) {
@@ -623,7 +598,7 @@ function MaticController() {
   const onMint = async (depositAddress) => {
     if (window.ethereum) {
       const chainId = await window.ethereum.request({ method: 'eth_chainId' });
-      if (chainId !== '0x89') { // Mumbai Matic Testnet network ID
+      if (chainId !== '0x89') { // Polygon network ID
          return window.confirm('WARNING: Metamask is not set to Polygon network!')
       }
     }
@@ -752,27 +727,25 @@ function MaticController() {
             className="button button1"
             target="_blank"
             rel="noreferrer"
-            href="https://dingocoin.com"
-          // href="https://pancakeswap.finance/swap?outputCurrency=0x9b208b117B2C4F76C1534B6f006b033220a681A4"
+            href="https://app.uniswap.org/#/swap?chain=polygon&outputCurrency=0x033babac01c4e3915cf71d24b6bfb58e606fdb80"
           >
-            Buy wDingocoin (MATIC)
+            Buy wDingocoin (POL)
           </a>
           <a
             className="button button1"
             target="_blank"
             rel="noreferrer"
-            href="https://dingocoin.com"
+            href="https://dexscreener.com/polygon/0xe0b11d00b5c6b73931d1ae91016dab4f371fabe0"
           >
-            wDingocoin (MATIC) Price
+            wDingocoin (POL) Price
           </a>
           <a
             className="button button2"
             target="_blank"
             rel="noreferrer"
-            // href="https://dingocoin.com"
             href={`https://polygonscan.com/token/${CONTRACT_ADDRESS}`}
           >
-            wDingocoin (MATIC) Contract
+            wDingocoin (POL) Contract
           </a>
           <a
             className="button button4"
@@ -1107,4 +1080,4 @@ function MaticController() {
   );
 }
 
-export default MaticController;
+export default PolygonController;
