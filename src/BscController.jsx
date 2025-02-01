@@ -8,6 +8,40 @@ import { Container } from "react-bootstrap";
 
 const DECIMALS = 8;
 
+const AUTHORITY_NODES = [
+  {
+    location: "n0.dingocoin.com",
+    port: 8443,
+    walletAddress: "0xD456eB296F8448Df66745f9bd0e759a1b58a6D9d",
+  },
+  {
+    location: "n1.dingocoin.com",
+    port: 8443,
+    walletAddress: "0xD14Bc59472b8f1fA5baA99a17855d06aD327dCae",
+  },
+  {
+    location: "n2.dingocoin.com",
+    port: 8443,
+    walletAddress: "0x3279f7B244F0194fd359D5AC29359ca676193aDb",
+  },
+  {
+    location: "n3.dingocoin.com",
+    port: 8443,
+    walletAddress: "0x9d046eDc2C80727259355E4CFBb8B72750348Ad9",
+  },
+  {
+    location: "n4.dingocoin.com",
+    port: 8443,
+    walletAddress: "0xfe7141385E848274bba58E710C8c5D1c673Ef2Fe",
+  },
+];
+const CONTRACT_ADDRESS = "0x9b208b117B2C4F76C1534B6f006b033220a681A4";
+
+const AUTHORITY_THRESHOLD = 3;
+const authorityLink = (x) => {
+  return `https://${x.location}:${x.port}`;
+};
+
 const toSatoshi = (x) => {
   let xs = x.toFixed(DECIMALS);
   xs = xs.substr(0, xs.length - DECIMALS - 1) + xs.slice(xs.length - DECIMALS);
@@ -48,39 +82,6 @@ const isValidDingocoinAddress = (x) => {
   return raw.slice(21, 25).equals(checksum.slice(0, 4));
 };
 
-const AUTHORITY_NODES = [
-  {
-    location: "n0.dingocoin.com",
-    port: 8443,
-    walletAddress: "0xD456eB296F8448Df66745f9bd0e759a1b58a6D9d",
-  },
-  {
-    location: "n1.dingocoin.com",
-    port: 8443,
-    walletAddress: "0xD14Bc59472b8f1fA5baA99a17855d06aD327dCae",
-  },
-  {
-    location: "n2.dingocoin.com",
-    port: 8443,
-    walletAddress: "0x3279f7B244F0194fd359D5AC29359ca676193aDb",
-  },
-  {
-    location: "n3.dingocoin.com",
-    port: 8443,
-    walletAddress: "0x9d046eDc2C80727259355E4CFBb8B72750348Ad9",
-  },
-  {
-    location: "n4.dingocoin.com",
-    port: 8443,
-    walletAddress: "0xfe7141385E848274bba58E710C8c5D1c673Ef2Fe",
-  },
-];
-const AUTHORITY_THRESHOLD = 3;
-const authorityLink = (x) => {
-  return `https://${x.location}:${x.port}`;
-};
-
-const CONTRACT_ADDRESS = "0x9b208b117B2C4F76C1534B6f006b033220a681A4";
 
 const CONTRACT_ABI = [
   { inputs: [], stateMutability: "nonpayable", type: "constructor" },

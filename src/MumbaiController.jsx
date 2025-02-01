@@ -8,6 +8,35 @@ import { Container } from "react-bootstrap";
 
 const DECIMALS = 8;
 
+const AUTHORITY_NODES = [
+  {
+    location: "mad1.twinkykms.com",
+    port: 8443,
+    walletAddress: "0xb1B323740a8E7D13AF10839b121e22083Da23Ac1",
+  },
+  {
+    location: "mad2.twinkykms.com",
+    port: 8443,
+    walletAddress: "0x31d75dB9eC7F1aBE2905fb590a4E41401F837C05",
+  },
+  {
+    location: "mad3.twinkykms.com",
+    port: 8443,
+    walletAddress: "0x9C1844FFD3fb0E2c397D6510d3dCf3E2f77f47A2",
+  },
+  {
+    location: "mad4.twinkykms.com",
+    port: 8443,
+    walletAddress: "0xb37F35DAfd8E5050CC80D9E262ad0176aD19483D",
+  },
+];
+const AUTHORITY_THRESHOLD = 3;
+const authorityLink = (x) => {
+  return `https://${x.location}:${x.port}`;
+};
+
+const CONTRACT_ADDRESS = "0x42134212af4e5277702da9317a77d7f3db722ba3";
+
 const toSatoshi = (x) => {
   let xs = x.toFixed(DECIMALS);
   xs = xs.substr(0, xs.length - DECIMALS - 1) + xs.slice(xs.length - DECIMALS);
@@ -47,35 +76,6 @@ const isValidDingocoinAddress = (x) => {
   const checksum = sha256(sha256(raw.slice(0, 21)));
   return raw.slice(21, 25).equals(checksum.slice(0, 4));
 };
-
-const AUTHORITY_NODES = [
-  {
-    location: "mad1.twinkykms.com",
-    port: 8443,
-    walletAddress: "0xb1B323740a8E7D13AF10839b121e22083Da23Ac1",
-  },
-  {
-    location: "mad2.twinkykms.com",
-    port: 8443,
-    walletAddress: "0x31d75dB9eC7F1aBE2905fb590a4E41401F837C05",
-  },
-  {
-    location: "mad3.twinkykms.com",
-    port: 8443,
-    walletAddress: "0x9C1844FFD3fb0E2c397D6510d3dCf3E2f77f47A2",
-  },
-  {
-    location: "mad4.twinkykms.com",
-    port: 8443,
-    walletAddress: "0xb37F35DAfd8E5050CC80D9E262ad0176aD19483D",
-  },
-];
-const AUTHORITY_THRESHOLD = 3;
-const authorityLink = (x) => {
-  return `https://${x.location}:${x.port}`;
-};
-
-const CONTRACT_ADDRESS = "0x42134212af4e5277702da9317a77d7f3db722ba3";
 
 const CONTRACT_ABI = [
   { inputs: [], stateMutability: "nonpayable", type: "constructor" },

@@ -8,6 +8,40 @@ import { Container } from "react-bootstrap";
 
 const DECIMALS = 8;
 
+const AUTHORITY_NODES = [
+  {
+    location: "mn1.dingocoin.com",
+    port: 8443,
+    walletAddress: "0x72321c492EAA102C331C0EB64c9E4a72036f2f1d",
+  },
+  {
+    location: "wdingo.triplezen.org",
+    port: 8443,
+    walletAddress: "0x90c5951c839de0CC80138D7A47a3F1F0eE5828Ba",
+  },
+  {
+    location: "wdingomatic.mysterious-beard-tackles.com",
+    port: 8443,
+    walletAddress: "0xcceA32dDbd0b8c56904ED5Cf6Bed0260a753b90a",
+  },
+  {
+    location: "mn2.dingocoin.com",
+    port: 8443,
+    walletAddress: "0xfA3ba79a0266Fd0354547E4807b19bC8Cef0696C",
+  },
+  {
+    location: "mn3.dingocoin.com",
+    port: 8443,
+    walletAddress: "0x171922Ad1C671AaAB08A2EEFDf1F92cDB78cA6b4",
+  },
+];
+const AUTHORITY_THRESHOLD = 3;
+const authorityLink = (x) => {
+  return `https://${x.location}:${x.port}`;
+};
+
+const CONTRACT_ADDRESS = "0x033babac01c4e3915cf71d24b6bfb58e606fdb80";
+
 const toSatoshi = (x) => {
   let xs = x.toFixed(DECIMALS);
   xs = xs.substr(0, xs.length - DECIMALS - 1) + xs.slice(xs.length - DECIMALS);
@@ -47,40 +81,6 @@ const isValidDingocoinAddress = (x) => {
   const checksum = sha256(sha256(raw.slice(0, 21)));
   return raw.slice(21, 25).equals(checksum.slice(0, 4));
 };
-
-const AUTHORITY_NODES = [
-  {
-    location: "mn1.dingocoin.com",
-    port: 8443,
-    walletAddress: "0x72321c492EAA102C331C0EB64c9E4a72036f2f1d",
-  },
-  {
-    location: "wdingo.triplezen.org",
-    port: 8443,
-    walletAddress: "0x90c5951c839de0CC80138D7A47a3F1F0eE5828Ba",
-  },
-  {
-    location: "wdingomatic.mysterious-beard-tackles.com",
-    port: 8443,
-    walletAddress: "0xcceA32dDbd0b8c56904ED5Cf6Bed0260a753b90a",
-  },
-  {
-    location: "mn2.dingocoin.com",
-    port: 8443,
-    walletAddress: "0xfA3ba79a0266Fd0354547E4807b19bC8Cef0696C",
-  },
-  {
-    location: "mn3.dingocoin.com",
-    port: 8443,
-    walletAddress: "0x171922Ad1C671AaAB08A2EEFDf1F92cDB78cA6b4",
-  },
-];
-const AUTHORITY_THRESHOLD = 3;
-const authorityLink = (x) => {
-  return `https://${x.location}:${x.port}`;
-};
-
-const CONTRACT_ADDRESS = "0x033babac01c4e3915cf71d24b6bfb58e606fdb80";
 
 const CONTRACT_ABI = [
   { inputs: [], stateMutability: "nonpayable", type: "constructor" },
