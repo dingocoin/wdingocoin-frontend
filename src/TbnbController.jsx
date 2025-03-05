@@ -445,7 +445,7 @@ function TbnbController() {
     return `https://${node.location}:8443`;
   };
   const stableAuthorityLink = () => {
-    const node = AUTHORITY_NODES[4];
+    const node = AUTHORITY_NODES[0];
     return `https://${node.location}:8443`;
   };
 
