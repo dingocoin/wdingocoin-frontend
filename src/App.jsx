@@ -1,7 +1,7 @@
 import "./App.scss";
 import BscController from "./BscController";
 import SolController from "./SolController";
-import MumbaiController from "./MumbaiController";
+import TbnbController from "./TbnbController";
 import PolygonController from './PolygonController';
 import ReactGA from "react-ga";
 
@@ -138,20 +138,20 @@ export default function App() {
                     >
                       Binance Smart Chain (BSC)
                     </Dropdown.Item>
-                    {/* <Dropdown.Item
+                    <Dropdown.Item
                       onClick={() => {
                         setController("Polygon (POL)");
                       }}
                     >
                       Polygon (POL)
-                    </Dropdown.Item> */}
-                    {/* <Dropdown.Item
+                    </Dropdown.Item>
+                    <Dropdown.Item
                       onClick={() => {
-                        setController("Solana (SOL)");
+                        setController("Tbnb Testnet");
                       }}
                     >
-                      Solana (SOL)
-                    </Dropdown.Item> */}
+                      Tbnb Testnet
+                    </Dropdown.Item>
                   </DropdownButton>
                 </h5>
               </FadeInSection>
@@ -162,7 +162,7 @@ export default function App() {
               <h5 className="mt-3 text-center">
                 {controller === "Binance Smart Chain (BSC)" && <BscController />}
                 {controller === "Polygon (POL)" && <PolygonController />}
-                {controller === "Mumbai TESTNET" && <MumbaiController />}
+                {controller === "Tbnb Testnet" && <TbnbController />}
                 {controller === "Solana (SOL)" && <SolController />}
               </h5>
             </Container>

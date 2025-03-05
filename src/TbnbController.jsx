@@ -10,32 +10,28 @@ const DECIMALS = 8;
 
 const AUTHORITY_NODES = [
   {
-    location: "mad1.twinkykms.com",
-    port: 8443,
-    walletAddress: "0xb1B323740a8E7D13AF10839b121e22083Da23Ac1",
+    location: "tn1.dingocoin.com",
+    walletAddress: "0xb578185FedbFC292D27784CF0c819db9845A6608",
   },
   {
-    location: "mad2.twinkykms.com",
-    port: 8443,
-    walletAddress: "0x31d75dB9eC7F1aBE2905fb590a4E41401F837C05",
+    location: "tn2.dingocoin.com",
+    walletAddress: "0xC6541A08E3A504DB29C2514bAf1F40Cc7ABe602C",
   },
   {
-    location: "mad3.twinkykms.com",
-    port: 8443,
-    walletAddress: "0x9C1844FFD3fb0E2c397D6510d3dCf3E2f77f47A2",
+    location: "tn3.dingocoin.com",
+    walletAddress: "0x66188d6F3cEA70FB28449f6939cF9f006f10DD07",
   },
   {
-    location: "mad4.twinkykms.com",
-    port: 8443,
-    walletAddress: "0xb37F35DAfd8E5050CC80D9E262ad0176aD19483D",
+    location: "tn4.dingocoin.com",
+    walletAddress: "0x2E6c81A470d738D6fc6d20AE2C661f33F0c4633b",
   },
 ];
 const AUTHORITY_THRESHOLD = 3;
 const authorityLink = (x) => {
-  return `https://${x.location}:${x.port}`;
+  return `https://${x.location}:8443`;
 };
 
-const CONTRACT_ADDRESS = "0x42134212af4e5277702da9317a77d7f3db722ba3";
+const CONTRACT_ADDRESS = "0x4acb2daf58830cc4297ad46a3590aef28db69cf5";
 
 const toSatoshi = (x) => {
   let xs = x.toFixed(DECIMALS);
@@ -419,8 +415,8 @@ function OnboardingButton(props) {
   );
 }
 
-function MumbaiController() {
-  const web3 = new Web3("https://rpc-mumbai.maticvigil.com");
+function TbnbController() {
+  const web3 = new Web3("https://bsc-testnet.public.blastapi.io");
   const contract = new web3.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS);
   async function post(link, data) {
     const controller = new AbortController();
@@ -446,11 +442,11 @@ function MumbaiController() {
       AUTHORITY_NODES[
       aliveNodes[Math.floor(Math.random() * aliveNodes.length)]
       ];
-    return `https://${node.location}:${node.port}`;
+    return `https://${node.location}:8443`;
   };
   const stableAuthorityLink = () => {
     const node = AUTHORITY_NODES[4];
-    return `https://${node.location}:${node.port}`;
+    return `https://${node.location}:8443`;
   };
 
   const [mintDepositAddresses, setMintDepositAddresses] = React.useState([]);
@@ -616,12 +612,6 @@ function MumbaiController() {
   };
 
   const onMint = async (depositAddress) => {
-    if (window.ethereum) {
-      const chainId = await window.ethereum.request({ method: 'eth_chainId' });
-      if (chainId !== '0x13881') { // Mumbai Polygon Testnet network ID
-        return window.confirm('WARNING: Metamask is not set to Polygon Mumbai Testnet network!')
-      }
-    }
     const mintTransactionInfos = Array(AUTHORITY_NODES.length).fill(undefined);
     await Promise.all(
       AUTHORITY_NODES.map((x, i) => {
@@ -1101,4 +1091,4 @@ function MumbaiController() {
   );
 }
 
-export default MumbaiController;
+export default TbnbController;
