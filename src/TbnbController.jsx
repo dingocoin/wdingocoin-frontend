@@ -461,6 +461,11 @@ function TbnbController() {
 
   const [stats, setStats] = React.useState(null);
 
+  // Add these new state variables for expiration handling
+  const [expiresAt, setExpiresAt] = React.useState(null);
+  const [daysUntilExpiration, setDaysUntilExpiration] = React.useState(null);
+  const [isExpired, setIsExpired] = React.useState(false);
+
   const onAccountChange = (selectedWallet) => {
     setWallet(selectedWallet);
   };
@@ -478,12 +483,24 @@ function TbnbController() {
           unconfirmedAmount: mintBalance.unconfirmedAmount,
           depositedAmount: mintBalance.depositedAmount,
           mintedAmount: mintBalance.mintedAmount,
+          // Store expiration info in the depositAddresses array
+          expiresAt: mintBalance.expiresAt,
+          daysUntilExpiration: mintBalance.daysUntilExpiration,
+          isExpired: mintBalance.isExpired,
         },
       ]);
       setHasMintDepositAddress(true);
+      // Update expiration state variables
+      setExpiresAt(mintBalance.expiresAt);
+      setDaysUntilExpiration(mintBalance.daysUntilExpiration);
+      setIsExpired(mintBalance.isExpired);
     } else {
       setMintDepositAddresses([]);
       setHasMintDepositAddress(false);
+      // Reset expiration state variables
+      setExpiresAt(null);
+      setDaysUntilExpiration(null);
+      setIsExpired(false);
     }
 
     if (aliveNodes.length === AUTHORITY_NODES.length) {
@@ -729,6 +746,62 @@ function TbnbController() {
     await refresh();
   };
 
+  // Add helper function for date formatting
+  const formatExpirationDate = (timestamp) => {
+    if (!timestamp) return '';
+    return new Date(timestamp * 1000).toLocaleDateString();
+  };
+
+  // Add expiration status UI component
+  const renderExpirationStatus = () => {
+    if (!expiresAt) return null;
+    
+    let statusClass = 'status-badge';
+    let statusText = '';
+    
+    if (isExpired) {
+      statusClass += ' status-expired';
+      statusText = 'Expired';
+    } else if (daysUntilExpiration <= 7) {
+      statusClass += ' status-warning';
+      statusText = 'Expiring Soon';
+    } else {
+      statusClass += ' status-active';
+      statusText = 'Active';
+    }
+    
+    return (
+      <div className="expiration-container">
+        <div className={statusClass}>{statusText}</div>
+        <div className="expiration-info">
+          {isExpired ? (
+            <span>Expired on {formatExpirationDate(expiresAt)}</span>
+          ) : (
+            <span>Expires in {daysUntilExpiration} days ({formatExpirationDate(expiresAt)})</span>
+          )}
+        </div>
+        
+        {!isExpired && daysUntilExpiration <= 7 && (
+          <div className="warning-message">
+            <i className="warning-icon"></i>
+            <p>This deposit address will expire in {daysUntilExpiration} days. 
+            Consider generating a new address for future deposits.</p>
+            <button onClick={onCreateDepositAddress}>Generate New Address</button>
+          </div>
+        )}
+        
+        {isExpired && (
+          <div className="error-message">
+            <i className="error-icon"></i>
+            <p>This deposit address has expired. While deposits to this address will still be processed, 
+            please generate a new address for improved security.</p>
+            <button onClick={onCreateDepositAddress}>Generate New Address</button>
+          </div>
+        )}
+      </div>
+    );
+  };
+
   return (
     <div>
       <header className="App-header">
@@ -854,6 +927,7 @@ function TbnbController() {
                   (* The amount here is after a fee deduction of 10 Dingocoins +
                   1% of total deposited amount thereafter)
                 </p>
+                {renderExpirationStatus()}
               </div>
             )}
           </section>
