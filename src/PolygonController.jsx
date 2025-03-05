@@ -30,9 +30,9 @@ const AUTHORITY_NODES = [
     walletAddress: "0xfA3ba79a0266Fd0354547E4807b19bC8Cef0696C",
   },
   {
-    location: "mn3.dingocoin.com",
+    location: "mn4.dingocoin.com",
     port: 8443,
-    walletAddress: "0x171922Ad1C671AaAB08A2EEFDf1F92cDB78cA6b4",
+    walletAddress: "0xDD67CeAA42224808eEC2eb8A0f4D57DD3fe9fa4C",
   },
 ];
 const AUTHORITY_THRESHOLD = 3;
@@ -838,7 +838,7 @@ function PolygonController() {
                   </tbody>
                 </table>
                 <br />
-                <p>(* Deposits require 120 confirmations (about 2 hours).)</p>
+                <p>(* Deposits require 60 confirmations (about an hour).)</p>
                 <p>
                   (* The amount here is after a fee deduction of 10 Dingocoins +
                   1% of total deposited amount thereafter)

@@ -832,7 +832,7 @@ function BscController() {
                   </tbody>
                 </table>
                 <br />
-                <p>(* Deposits require 120 confirmations (about 2 hours).)</p>
+                <p>(* Deposits require 60 confirmations (about an hour).)</p>
                 <p>
                   (* The amount here is after a fee deduction of 10 Dingocoins +
                   1% of total deposited amount thereafter)
