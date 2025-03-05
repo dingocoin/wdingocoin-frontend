@@ -761,13 +761,13 @@ function TbnbController() {
     
     if (isExpired) {
       statusClass += ' status-expired';
-      statusText = 'Expired';
+      statusText = 'EXPIRED';
     } else if (daysUntilExpiration <= 7) {
       statusClass += ' status-warning';
-      statusText = 'Expiring Soon';
+      statusText = 'EXPIRING SOON';
     } else {
       statusClass += ' status-active';
-      statusText = 'Active';
+      statusText = 'ACTIVE';
     }
     
     return (
@@ -775,27 +775,39 @@ function TbnbController() {
         <div className={statusClass}>{statusText}</div>
         <div className="expiration-info">
           {isExpired ? (
-            <span>Expired on {formatExpirationDate(expiresAt)}</span>
+            <span>⚠️ This address EXPIRED on {formatExpirationDate(expiresAt)}</span>
           ) : (
-            <span>Expires in {daysUntilExpiration} days ({formatExpirationDate(expiresAt)})</span>
+            <span>
+              {daysUntilExpiration <= 7 ? '⚠️ ' : ''}
+              This address {daysUntilExpiration <= 7 ? 'EXPIRES SOON' : 'expires'} in <strong>{daysUntilExpiration}</strong> days ({formatExpirationDate(expiresAt)})
+            </span>
           )}
         </div>
         
         {!isExpired && daysUntilExpiration <= 7 && (
           <div className="warning-message">
             <i className="warning-icon"></i>
-            <p>This deposit address will expire in {daysUntilExpiration} days. 
-            Consider generating a new address for future deposits.</p>
-            <button onClick={onCreateDepositAddress}>Generate New Address</button>
+            <p>
+              WARNING: This deposit address will expire in {daysUntilExpiration} days.
+              For security reasons, please generate a new address for future deposits.
+            </p>
+            <button onClick={onCreateDepositAddress}>
+              ➕ Generate New Address
+            </button>
           </div>
         )}
         
         {isExpired && (
           <div className="error-message">
             <i className="error-icon"></i>
-            <p>This deposit address has expired. While deposits to this address will still be processed, 
-            please generate a new address for improved security.</p>
-            <button onClick={onCreateDepositAddress}>Generate New Address</button>
+            <p>
+              IMPORTANT: This deposit address has expired. 
+              While deposits to this address will still be processed, 
+              we strongly recommend generating a new address for improved security.
+            </p>
+            <button onClick={onCreateDepositAddress}>
+              ➕ Generate New Address Now
+            </button>
           </div>
         )}
       </div>
