@@ -546,7 +546,7 @@ function PolygonController() {
     if (wallet !== null && aliveNodes !== null) {
       const refreshLoop = () => {
         refresh();
-        setTimeout(refreshLoop, 3000);
+        setTimeout(refreshLoop, 15000);
       };
       refreshLoop();
     }
