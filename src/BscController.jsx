@@ -507,7 +507,8 @@ function BscController() {
         ) {
           burnHistory[i].status = null;
         } else if (
-          burnHistories.filter((x) => x[i].status === null).length > 0
+          burnHistories.filter((x) => x.length > 0).length <
+          burnHistories.length
         ) {
           burnHistory[i].status = null;
         } else if (
@@ -880,11 +881,26 @@ function BscController() {
                       <th className="short-header">Unconfirmed</th>
                       <th className="short-header">Confirmed*</th>
                       <th className="short-header">Minted</th>
+                      <th className="short-header">Status</th>
                       <th className="short-header">Action</th>
                     </tr>
                   </thead>
                   <tbody>
                     {mintDepositAddresses.map((x) => {
+                      let statusClass = '';
+                      let statusText = '';
+                      
+                      if (x.isExpired) {
+                        statusClass = 'status-expired';
+                        statusText = 'EXPIRED';
+                      } else if (x.daysUntilExpiration <= 7) {
+                        statusClass = 'status-warning';
+                        statusText = 'EXPIRES SOON';
+                      } else {
+                        statusClass = 'status-active';
+                        statusText = 'ACTIVE';
+                      }
+                      
                       return (
                         <tr key={x.depositAddress}>
                           <td className="long-header">{x.depositAddress}</td>
@@ -897,13 +913,24 @@ function BscController() {
                           <td className="short-header">
                             {fromSatoshi(x.mintedAmount)}
                           </td>
+                          <td className={`short-header ${statusClass}`}>
+                            <span>{statusText}</span>
+                            <br />
+                            <small>{x.isExpired ? 'Expired' : `${x.daysUntilExpiration} days left`}</small>
+                          </td>
                           <td className="short-header">
-                            {BigInt(x.mintedAmount) <
-                              BigInt(x.depositedAmount) && (
+                            {BigInt(x.mintedAmount) < BigInt(x.depositedAmount) ? (
                               <button onClick={() => onMint(x.depositAddress)}>
                                 Mint balance
                               </button>
-                            )}
+                            ) : x.isExpired ? (
+                              <button 
+                                onClick={onCreateDepositAddress}
+                                className="regenerate-button"
+                              >
+                                Generate New Address
+                              </button>
+                            ) : null}
                           </td>
                         </tr>
                       );

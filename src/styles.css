@@ -114,4 +114,60 @@
 .error-icon {
   background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" fill="%23721c24"/></svg>');
 }
+
+/* Table status column styles */
+td.status-active {
+  background-color: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+  font-weight: bold;
+}
+
+td.status-warning {
+  background-color: #fff3cd;
+  color: #856404;
+  border: 1px solid #ffeeba;
+  font-weight: bold;
+  animation: pulse 2s infinite;
+}
+
+td.status-expired {
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+  font-weight: bold;
+  animation: pulse 2s infinite;
+}
+
+td.status-active span, 
+td.status-warning span, 
+td.status-expired span {
+  font-size: 13px;
+  font-weight: bold;
+  letter-spacing: 0.5px;
+}
+
+td.status-active small, 
+td.status-warning small, 
+td.status-expired small {
+  font-size: 11px;
+}
+
+/* Regenerate button styling */
+.regenerate-button {
+  background-color: #fd7e14;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.2s;
+}
+
+.regenerate-button:hover {
+  background-color: #e8700d;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
 /* ... existing styles ... */ 
