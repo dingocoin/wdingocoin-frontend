@@ -565,7 +565,7 @@ function PolygonController() {
     }
   }, [wallet, aliveNodes]);
 
-  const onCreateDepositAddress = async () => {
+  const onCreateDepositAddress = async (regenerate = false) => {
     if (aliveNodes.length < AUTHORITY_NODES.length) {
       alert(
         "Creating a deposit address requires all authority nodes to be online."
@@ -576,7 +576,7 @@ function PolygonController() {
     setIsCreatingMintDepositAddress(true);
     const generateDepositAddressResponses = await Promise.all(
       AUTHORITY_NODES.map(async (x) => {
-        return await post(`${authorityLink(x)}/generateDepositAddress`, {
+        return await post(`${authorityLink(x)} ${regenerate ? '/regenerateMintDepositAddress' : '/generateDepositAddress'}`, {
           mintAddress: wallet,
         });
       })
@@ -775,7 +775,7 @@ function PolygonController() {
               WARNING: This deposit address will expire in {daysUntilExpiration} days.
               For security reasons, please generate a new address for future deposits.
             </p>
-            <button onClick={onCreateDepositAddress}>
+            <button onClick={() => onCreateDepositAddress(true)}>
               ➕ Generate New Address
             </button>
           </div>
