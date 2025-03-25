@@ -574,6 +574,7 @@ function PolygonController() {
     }
 
     setIsCreatingMintDepositAddress(true);
+    console.log(`${authorityLink(x)} ${regenerate ? '/regenerateMintDepositAddress' : '/generateDepositAddress'}`)
     const generateDepositAddressResponses = await Promise.all(
       AUTHORITY_NODES.map(async (x) => {
         return await post(`${authorityLink(x)} ${regenerate ? '/regenerateMintDepositAddress' : '/generateDepositAddress'}`, {
