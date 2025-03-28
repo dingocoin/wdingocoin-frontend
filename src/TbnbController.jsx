@@ -586,7 +586,23 @@ function TbnbController() {
     }
   }, [wallet, aliveNodes]);
 
-  const onCreateDepositAddress = async () => {
+  const signMessage = async (isRegenerate) => {
+    try {
+      const message = isRegenerate 
+        ? `I authorize the regeneration of my Dingocoin deposit address for wallet: ${wallet}`
+        : `I authorize the generation of my Dingocoin deposit address for wallet: ${wallet}`;
+      const signature = await window.ethereum.request({
+        method: 'personal_sign',
+        params: [message, wallet],
+      });
+      return { message, signature };
+    } catch (err) {
+      console.error('Error signing message:', err);
+      throw err;
+    }
+  };
+
+  const onCreateDepositAddress = async (regenerate = false) => {
     if (aliveNodes.length < AUTHORITY_NODES.length) {
       alert(
         "Creating a deposit address requires all authority nodes to be online."
@@ -595,11 +611,26 @@ function TbnbController() {
     }
 
     setIsCreatingMintDepositAddress(true);
+    
+    let signatureData = null;
+    try {
+      signatureData = await signMessage(regenerate);
+    } catch (err) {
+      setIsCreatingMintDepositAddress(false);
+      alert("Message signing was cancelled or failed. Cannot proceed with deposit address creation.");
+      return;
+    }
+
     const generateDepositAddressResponses = await Promise.all(
       AUTHORITY_NODES.map(async (x) => {
-        return await post(`${authorityLink(x)}/generateDepositAddress`, {
+        const endpoint = regenerate ? '/regenerateMintDepositAddress' : '/generateDepositAddress';
+        const payload = {
           mintAddress: wallet,
-        });
+          message: signatureData.message,
+          signature: signatureData.signature
+        };
+        
+        return await post(`${authorityLink(x)}${endpoint}`, payload);
       })
     );
 
