@@ -599,7 +599,7 @@ function TbnbController() {
     }
   };
 
-  const onCreateDepositAddress = async (regenerate) => {
+  const onCreateDepositAddress = async (regenerate = false) => {
     if (aliveNodes.length < AUTHORITY_NODES.length) {
       alert(
         "Creating a deposit address requires all authority nodes to be online."
@@ -609,54 +609,66 @@ function TbnbController() {
 
     setIsCreatingMintDepositAddress(true);
 
-    if (regenerate) {
-      // For regeneration, we just need to call regenerateMintDepositAddress on each node
-      await Promise.all(
-        AUTHORITY_NODES.map(async (x) => {
-          return await post(`${authorityLink(x)}/regenerateMintDepositAddress`, {
-            mintAddress: wallet,
-            message: `I authorize the regeneration of my Dingocoin deposit address for wallet: ${wallet}`,
-            signature: await signMessage(`I authorize the regeneration of my Dingocoin deposit address for wallet: ${wallet}`)
-          });
-        })
-      );
-    } else {
-      // For new addresses, we need to generate individual addresses then register the multisig
-      const generateDepositAddressResponses = await Promise.all(
-        AUTHORITY_NODES.map(async (x) => {
-          return await post(`${authorityLink(x)}/generateDepositAddress`, {
-            mintAddress: wallet,
-            message: `I authorize the generation of my Dingocoin deposit address for wallet: ${wallet}`,
-            signature: await signMessage(`I authorize the generation of my Dingocoin deposit address for wallet: ${wallet}`)
-          });
-        })
-      );
+    try {
+      // Sign message once for all nodes
+      const message = regenerate 
+        ? `I authorize the regeneration of my Dingocoin deposit address for wallet: ${wallet}`
+        : `I authorize the generation of my Dingocoin deposit address for wallet: ${wallet}`;
+      const signature = await signMessage(message);
 
-      const registerMintDepositAddressResponses = await Promise.all(
-        AUTHORITY_NODES.map(
-          async (x) =>
-            (
-              await post(`${authorityLink(x)}/registerMintDepositAddress`, {
-                mintAddress: wallet,
-                generateDepositAddressResponses: generateDepositAddressResponses,
-              })
-            ).data
-        )
-      );
+      if (regenerate) {
+        // For regeneration, we just need to call regenerateMintDepositAddress on each node
+        await Promise.all(
+          AUTHORITY_NODES.map(async (x) => {
+            return await post(`${authorityLink(x)}/regenerateMintDepositAddress`, {
+              mintAddress: wallet,
+              message: message,
+              signature: signature
+            });
+          })
+        );
+      } else {
+        // For new addresses, we need to generate individual addresses then register the multisig
+        const generateDepositAddressResponses = await Promise.all(
+          AUTHORITY_NODES.map(async (x) => {
+            return await post(`${authorityLink(x)}/generateDepositAddress`, {
+              mintAddress: wallet,
+              message: message,
+              signature: signature
+            });
+          })
+        );
 
-      if (
-        !registerMintDepositAddressResponses.every(
-          (x) =>
-            x.depositAddress ===
-            registerMintDepositAddressResponses[0].depositAddress
-        )
-      ) {
-        throw new Error("Consensus failure on deposit address");
+        const registerMintDepositAddressResponses = await Promise.all(
+          AUTHORITY_NODES.map(
+            async (x) =>
+              (
+                await post(`${authorityLink(x)}/registerMintDepositAddress`, {
+                  mintAddress: wallet,
+                  generateDepositAddressResponses: generateDepositAddressResponses,
+                })
+              ).data
+          )
+        );
+
+        if (
+          !registerMintDepositAddressResponses.every(
+            (x) =>
+              x.depositAddress ===
+              registerMintDepositAddressResponses[0].depositAddress
+          )
+        ) {
+          throw new Error("Consensus failure on deposit address");
+        }
       }
-    }
 
-    await refresh();
-    setIsCreatingMintDepositAddress(false);
+      await refresh();
+    } catch (err) {
+      console.error('Error:', err);
+      alert("Message signing was cancelled or failed. Cannot proceed with deposit address creation.");
+    } finally {
+      setIsCreatingMintDepositAddress(false);
+    }
   };
 
   const onMint = async (depositAddress) => {
