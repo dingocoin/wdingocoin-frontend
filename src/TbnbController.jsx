@@ -599,7 +599,7 @@ function TbnbController() {
     }
   };
 
-  const onCreateDepositAddress = async (regenerate = false) => {
+  const onCreateDepositAddress = async (regenerate) => {
     if (aliveNodes.length < AUTHORITY_NODES.length) {
       alert(
         "Creating a deposit address requires all authority nodes to be online."
@@ -822,7 +822,7 @@ function TbnbController() {
               WARNING: This deposit address will expire in {daysUntilExpiration} days.
               For security reasons, please generate a new address for future deposits.
             </p>
-            <button onClick={onCreateDepositAddress}>
+            <button onClick={() => onCreateDepositAddress(trues)}>
               ➕ Generate New Address
             </button>
           </div>
@@ -836,7 +836,7 @@ function TbnbController() {
               While deposits to this address will still be processed, 
               we strongly recommend generating a new address for improved security.
             </p>
-            <button onClick={onCreateDepositAddress}>
+            <button onClick={() => onCreateDepositAddress(true)}>
               ➕ Generate New Address Now
             </button>
           </div>
@@ -904,7 +904,7 @@ function TbnbController() {
                 <div>
                   {!isCreatingMintDepositAddress ? (
                     <p>
-                      <button onClick={onCreateDepositAddress}>
+                      <button onClick={() => onCreateDepositAddress(false)}>
                         Create your Dingocoin deposit address
                       </button>
                     </p>
