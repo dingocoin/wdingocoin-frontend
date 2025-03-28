@@ -822,7 +822,7 @@ function TbnbController() {
               WARNING: This deposit address will expire in {daysUntilExpiration} days.
               For security reasons, please generate a new address for future deposits.
             </p>
-            <button onClick={() => onCreateDepositAddress(trues)}>
+            <button onClick={() => onCreateDepositAddress(true)}>
               ➕ Generate New Address
             </button>
           </div>
