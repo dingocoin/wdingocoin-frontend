@@ -586,16 +586,13 @@ function TbnbController() {
     }
   }, [wallet, aliveNodes]);
 
-  const signMessage = async (isRegenerate) => {
+  const signMessage = async (message) => {
     try {
-      const message = isRegenerate 
-        ? `I authorize the regeneration of my Dingocoin deposit address for wallet: ${wallet}`
-        : `I authorize the generation of my Dingocoin deposit address for wallet: ${wallet}`;
       const signature = await window.ethereum.request({
         method: 'personal_sign',
         params: [message, wallet],
       });
-      return { message, signature };
+      return signature;
     } catch (err) {
       console.error('Error signing message:', err);
       throw err;
@@ -611,49 +608,51 @@ function TbnbController() {
     }
 
     setIsCreatingMintDepositAddress(true);
-    
-    let signatureData = null;
-    try {
-      signatureData = await signMessage(regenerate);
-    } catch (err) {
-      setIsCreatingMintDepositAddress(false);
-      alert("Message signing was cancelled or failed. Cannot proceed with deposit address creation.");
-      return;
-    }
 
-    const generateDepositAddressResponses = await Promise.all(
-      AUTHORITY_NODES.map(async (x) => {
-        const endpoint = regenerate ? '/regenerateMintDepositAddress' : '/generateDepositAddress';
-        const payload = {
-          mintAddress: wallet,
-          message: signatureData.message,
-          signature: signatureData.signature
-        };
-        
-        return await post(`${authorityLink(x)}${endpoint}`, payload);
-      })
-    );
+    if (regenerate) {
+      // For regeneration, we just need to call regenerateMintDepositAddress on each node
+      await Promise.all(
+        AUTHORITY_NODES.map(async (x) => {
+          return await post(`${authorityLink(x)}/regenerateMintDepositAddress`, {
+            mintAddress: wallet,
+            message: `I authorize the regeneration of my Dingocoin deposit address for wallet: ${wallet}`,
+            signature: await signMessage(`I authorize the regeneration of my Dingocoin deposit address for wallet: ${wallet}`)
+          });
+        })
+      );
+    } else {
+      // For new addresses, we need to generate individual addresses then register the multisig
+      const generateDepositAddressResponses = await Promise.all(
+        AUTHORITY_NODES.map(async (x) => {
+          return await post(`${authorityLink(x)}/generateDepositAddress`, {
+            mintAddress: wallet,
+            message: `I authorize the generation of my Dingocoin deposit address for wallet: ${wallet}`,
+            signature: await signMessage(`I authorize the generation of my Dingocoin deposit address for wallet: ${wallet}`)
+          });
+        })
+      );
 
-    const registerMintDepositAddressResponses = await Promise.all(
-      AUTHORITY_NODES.map(
-        async (x) =>
-          (
-            await post(`${authorityLink(x)}/registerMintDepositAddress`, {
-              mintAddress: wallet,
-              generateDepositAddressResponses: generateDepositAddressResponses,
-            })
-          ).data
-      )
-    );
+      const registerMintDepositAddressResponses = await Promise.all(
+        AUTHORITY_NODES.map(
+          async (x) =>
+            (
+              await post(`${authorityLink(x)}/registerMintDepositAddress`, {
+                mintAddress: wallet,
+                generateDepositAddressResponses: generateDepositAddressResponses,
+              })
+            ).data
+        )
+      );
 
-    if (
-      !registerMintDepositAddressResponses.every(
-        (x) =>
-          x.depositAddress ===
-          registerMintDepositAddressResponses[0].depositAddress
-      )
-    ) {
-      throw new Error("Consensus failure on deposit address");
+      if (
+        !registerMintDepositAddressResponses.every(
+          (x) =>
+            x.depositAddress ===
+            registerMintDepositAddressResponses[0].depositAddress
+        )
+      ) {
+        throw new Error("Consensus failure on deposit address");
+      }
     }
 
     await refresh();
