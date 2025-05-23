@@ -445,10 +445,6 @@ function PolygonController() {
 
   const [stats, setStats] = React.useState(null);
 
-  const [expiresAt, setExpiresAt] = React.useState(null);
-  const [daysUntilExpiration, setDaysUntilExpiration] = React.useState(null);
-  const [isExpired, setIsExpired] = React.useState(false);
-
   const onAccountChange = (selectedWallet) => {
     setWallet(selectedWallet);
   };
@@ -466,21 +462,12 @@ function PolygonController() {
           unconfirmedAmount: mintBalance.unconfirmedAmount,
           depositedAmount: mintBalance.depositedAmount,
           mintedAmount: mintBalance.mintedAmount,
-          expiresAt: mintBalance.expiresAt,
-          daysUntilExpiration: mintBalance.daysUntilExpiration,
-          isExpired: mintBalance.isExpired,
         },
       ]);
       setHasMintDepositAddress(true);
-      setExpiresAt(mintBalance.expiresAt);
-      setDaysUntilExpiration(mintBalance.daysUntilExpiration);
-      setIsExpired(mintBalance.isExpired);
     } else {
       setMintDepositAddresses([]);
       setHasMintDepositAddress(false);
-      setExpiresAt(null);
-      setDaysUntilExpiration(null);
-      setIsExpired(false);
     }
 
     if (aliveNodes.length === AUTHORITY_NODES.length) {
@@ -733,72 +720,6 @@ function PolygonController() {
     await refresh();
   };
 
-  const formatExpirationDate = (timestamp) => {
-    if (!timestamp) return '';
-    return new Date(timestamp * 1000).toLocaleDateString();
-  };
-
-  const renderExpirationStatus = () => {
-    if (!expiresAt) return null;
-    
-    let statusClass = 'status-badge';
-    let statusText = '';
-    
-    if (isExpired) {
-      statusClass += ' status-expired';
-      statusText = 'EXPIRED';
-    } else if (daysUntilExpiration <= 7) {
-      statusClass += ' status-warning';
-      statusText = 'EXPIRING SOON';
-    } else {
-      statusClass += ' status-active';
-      statusText = 'ACTIVE';
-    }
-    
-    return (
-      <div className="expiration-container">
-        <div className={statusClass}>{statusText}</div>
-        <div className="expiration-info">
-          {isExpired ? (
-            <span>⚠️ This address EXPIRED on {formatExpirationDate(expiresAt)}</span>
-          ) : (
-            <span>
-              {daysUntilExpiration <= 7 ? '⚠️ ' : ''}
-              This address {daysUntilExpiration <= 7 ? 'EXPIRES SOON' : 'expires'} in <strong>{daysUntilExpiration}</strong> days ({formatExpirationDate(expiresAt)})
-            </span>
-          )}
-        </div>
-        
-        {!isExpired && daysUntilExpiration <= 7 && (
-          <div className="warning-message">
-            <i className="warning-icon"></i>
-            <p>
-              WARNING: This deposit address will expire in {daysUntilExpiration} days.
-              For security reasons, please generate a new address for future deposits.
-            </p>
-            <button onClick={() => onCreateDepositAddress(true)}>
-              ➕ Generate New Address
-            </button>
-          </div>
-        )}
-        
-        {isExpired && (
-          <div className="error-message">
-            <i className="error-icon"></i>
-            <p>
-              IMPORTANT: This deposit address has expired. 
-              While deposits to this address will still be processed, 
-              we strongly recommend generating a new address for improved security.
-            </p>
-            <button onClick={onCreateDepositAddress}>
-              ➕ Generate New Address Now
-            </button>
-          </div>
-        )}
-      </div>
-    );
-  };
-
   return (
     <div>
       <header className="App-header">
@@ -896,17 +817,6 @@ function PolygonController() {
                       let statusClass = '';
                       let statusText = '';
                       
-                      if (x.isExpired) {
-                        statusClass = 'status-expired';
-                        statusText = 'EXPIRED';
-                      } else if (x.daysUntilExpiration <= 7) {
-                        statusClass = 'status-warning';
-                        statusText = 'EXPIRES SOON';
-                      } else {
-                        statusClass = 'status-active';
-                        statusText = 'ACTIVE';
-                      }
-                      
                       return (
                         <tr key={x.depositAddress}>
                           <td className="long-header">{x.depositAddress}</td>
@@ -922,19 +832,11 @@ function PolygonController() {
                           <td className={`short-header ${statusClass}`}>
                             <span>{statusText}</span>
                             <br />
-                            <small>{x.isExpired ? 'Expired' : `${x.daysUntilExpiration} days left`}</small>
                           </td>
                           <td className="short-header">
                             {BigInt(x.mintedAmount) < BigInt(x.depositedAmount) ? (
                               <button onClick={() => onMint(x.depositAddress)}>
                                 Mint balance
-                              </button>
-                            ) : x.isExpired ? (
-                              <button 
-                                onClick={onCreateDepositAddress}
-                                className="regenerate-button"
-                              >
-                                Generate New Address
                               </button>
                             ) : null}
                           </td>
@@ -949,7 +851,6 @@ function PolygonController() {
                   (* The amount here is after a fee deduction of 10 Dingocoins +
                   1% of total deposited amount thereafter)
                 </p>
-                {renderExpirationStatus()}
               </div>
             )}
           </section>
