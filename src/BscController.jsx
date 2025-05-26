@@ -35,6 +35,7 @@ const AUTHORITY_NODES = [
     walletAddress: "0xfe7141385E848274bba58E710C8c5D1c673Ef2Fe",
   },
 ];
+
 const CONTRACT_ADDRESS = "0x9b208b117B2C4F76C1534B6f006b033220a681A4";
 
 const AUTHORITY_THRESHOLD = 3;
@@ -844,7 +845,6 @@ function BscController() {
                   (* The amount here is after a fee deduction of 10 Dingocoins +
                   1% of total deposited amount thereafter)
                 </p>
-                {renderExpirationStatus()}
               </div>
             )}
           </section>
