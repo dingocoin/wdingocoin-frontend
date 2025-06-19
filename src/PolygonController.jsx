@@ -15,7 +15,7 @@ const AUTHORITY_NODES = [
     walletAddress: "0x72321c492EAA102C331C0EB64c9E4a72036f2f1d",
   },
   {
-    location: "wdingo.triplezen.org",
+    location: "mn5.dingocoin.com",
     port: 8443,
     walletAddress: "0x90c5951c839de0CC80138D7A47a3F1F0eE5828Ba",
   },
