@@ -552,7 +552,7 @@ function PolygonController() {
     }
   }, [wallet, aliveNodes]);
 
-  const onCreateDepositAddress = async (regenerate = false) => {
+  const onCreateDepositAddress = async () => {
     if (aliveNodes.length < AUTHORITY_NODES.length) {
       alert(
         "Creating a deposit address requires all authority nodes to be online."
@@ -563,8 +563,7 @@ function PolygonController() {
     setIsCreatingMintDepositAddress(true);
     const generateDepositAddressResponses = await Promise.all(
       AUTHORITY_NODES.map(async (x) => {
-        console.log(`${authorityLink(x)}${regenerate ? '/regenerateMintDepositAddress' : '/generateDepositAddress'}`)
-        return await post(`${authorityLink(x)}${regenerate ? '/regenerateMintDepositAddress' : '/generateDepositAddress'}`, {
+        return await post(`${authorityLink(x)}/generateDepositAddress`, {
           mintAddress: wallet,
         });
       })
