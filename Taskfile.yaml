@@ -3,6 +3,13 @@ version: 3
 vars:
   NAME: "wdingocoin-frontend"
   TAG: "latest"
+  REGISTRY: "ghcr.io"
+  OWNER: '{{.OWNER | default "dingocoin"}}'
+  IMAGE_NAME: "{{.REGISTRY}}/{{.OWNER}}/{{.NAME}}"
+  PLATFORMS: "linux/amd64,linux/arm64"
+  CI: "false"
+  ARCH:
+    sh: uname -m
 
 tasks:
   build:
@@ -33,10 +40,37 @@ tasks:
       - docker rmi {{.NAME}}:{{.TAG}} 2>/dev/null || true
       - docker rmi {{.NAME}}:dev 2>/dev/null || true
   
-  push:
-    desc: "Build and push to registry (requires login)"
+  # Unified build task for both local and CI
+  build-ci:
+    desc: "Build Docker image - multi-platform with push when CI=true, single platform when CI=false"
+    vars:
+      BUILD_NUMBER: "{{.RUN_NUMBER | default .TAG}}"
     cmds:
-      - docker build -t {{.NAME}}:{{.TAG}} .
-      - echo "Add your registry push command here"
-      # Example: - docker tag {{.NAME}}:{{.TAG}} your-registry/{{.NAME}}:{{.TAG}}
-      # Example: - docker push your-registry/{{.NAME}}:{{.TAG}}
+      - |
+        if [ "{{.CI}}" = "true" ]; then
+          echo "Building multi-platform image and pushing to registry..."
+          docker buildx build --platform {{.PLATFORMS}} -t {{.IMAGE_NAME}}:{{.BUILD_NUMBER}} -t {{.IMAGE_NAME}}:latest --push .
+        else
+          echo "Building single-platform image for local use..."
+          # Detect current architecture
+          ARCH=$(uname -m)
+          if [ "$ARCH" = "x86_64" ]; then
+            PLATFORM="linux/amd64"
+          elif [ "$ARCH" = "aarch64" ] || [ "$ARCH" = "arm64" ]; then
+            PLATFORM="linux/arm64"
+          else
+            echo "Unsupported architecture: $ARCH, defaulting to linux/amd64"
+            PLATFORM="linux/amd64"
+          fi
+          echo "Detected architecture: $ARCH"
+          echo "Target platform: $PLATFORM"
+          docker buildx build --platform $PLATFORM -t {{.IMAGE_NAME}}:{{.BUILD_NUMBER}} -t {{.IMAGE_NAME}}:latest --load .
+        fi
+
+  # Run the CI-built image
+  run-ci:
+    desc: "Run the Docker image built by build-ci"
+    vars:
+      BUILD_NUMBER: "{{.RUN_NUMBER | default .TAG}}"
+    cmds:
+      - docker run -p 80:80 {{.IMAGE_NAME}}:{{.BUILD_NUMBER}}
