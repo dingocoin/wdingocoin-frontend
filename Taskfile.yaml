@@ -49,10 +49,9 @@ tasks:
       - |
         if [ "{{.CI}}" = "true" ]; then
           echo "Building multi-platform image and pushing to registry..."
-          docker buildx build --platform {{.PLATFORMS}} -t {{.IMAGE_NAME}}:{{.BUILD_NUMBER}} -t {{.IMAGE_NAME}}:latest --push .
+          docker buildx build --platform {{.PLATFORMS}} -t {{.REGISTRY}}/{{lower .OWNER}}/{{.NAME}}:{{.BUILD_NUMBER}} -t {{.REGISTRY}}/{{lower .OWNER}}/{{.NAME}}:latest --push .
         else
           echo "Building single-platform image for local use..."
-          # Detect current architecture
           ARCH=$(uname -m)
           if [ "$ARCH" = "x86_64" ]; then
             PLATFORM="linux/amd64"
@@ -64,7 +63,7 @@ tasks:
           fi
           echo "Detected architecture: $ARCH"
           echo "Target platform: $PLATFORM"
-          docker buildx build --platform $PLATFORM -t {{.IMAGE_NAME}}:{{.BUILD_NUMBER}} -t {{.IMAGE_NAME}}:latest --load .
+          docker buildx build --platform $PLATFORM -t {{.REGISTRY}}/{{lower .OWNER}}/{{.NAME}}:{{.BUILD_NUMBER}} -t {{.REGISTRY}}/{{lower .OWNER}}/{{.NAME}}:latest --load .
         fi
 
   # Run the CI-built image
@@ -73,4 +72,4 @@ tasks:
     vars:
       BUILD_NUMBER: "{{.RUN_NUMBER | default .TAG}}"
     cmds:
-      - docker run -p 80:80 {{.IMAGE_NAME}}:{{.BUILD_NUMBER}}
+      - docker run -p 80:80 {{.REGISTRY}}/{{lower .OWNER}}/{{.NAME}}:{{.BUILD_NUMBER}}
