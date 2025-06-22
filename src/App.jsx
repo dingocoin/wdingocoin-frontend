@@ -145,13 +145,13 @@ export default function App() {
                     >
                       Polygon (POL)
                     </Dropdown.Item>
-                    <Dropdown.Item
+                    {/* <Dropdown.Item
                       onClick={() => {
                         setController("Tbnb Testnet");
                       }}
                     >
                       Tbnb Testnet
-                    </Dropdown.Item>
+                    </Dropdown.Item> */}
                   </DropdownButton>
                 </h5>
               </FadeInSection>
