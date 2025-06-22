@@ -5,7 +5,7 @@ vars:
   TAG: "latest"
   REGISTRY: "ghcr.io"
   OWNER: '{{.OWNER | default "dingocoin"}}'
-  IMAGE_NAME: "{{.REGISTRY}}/{{.OWNER}}/{{.NAME}}"
+  IMAGE_NAME: "{{.REGISTRY}}/{{lower .OWNER}}/{{.NAME}}"
 
 tasks:
   build:
