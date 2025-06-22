@@ -1,0 +1,42 @@
+version: 3
+
+vars:
+  NAME: "wdingocoin-frontend"
+  TAG: "latest"
+
+tasks:
+  build:
+    desc: "Build the production Docker image"
+    cmds:
+      - docker build -t {{.NAME}}:{{.TAG}} .
+  
+  dev-build:
+    desc: "Build the development Docker image"
+    cmds:
+      - docker build -f Dockerfile.dev -t {{.NAME}}:dev .
+  
+  run:
+    desc: "Run the production Docker container"
+    cmds:
+      - docker run -p 80:80 {{.NAME}}:{{.TAG}}
+  
+  dev:
+    desc: "Run in development mode with hot reload"
+    cmds:
+      - docker run -p 3000:3000 -v $(pwd)/src:/app/src {{.NAME}}:dev
+  
+  clean:
+    desc: "Remove Docker images and containers"
+    cmds:
+      - docker stop $(docker ps -q --filter ancestor={{.NAME}}:{{.TAG}}) 2>/dev/null || true
+      - docker rm $(docker ps -aq --filter ancestor={{.NAME}}:{{.TAG}}) 2>/dev/null || true
+      - docker rmi {{.NAME}}:{{.TAG}} 2>/dev/null || true
+      - docker rmi {{.NAME}}:dev 2>/dev/null || true
+  
+  push:
+    desc: "Build and push to registry (requires login)"
+    cmds:
+      - docker build -t {{.NAME}}:{{.TAG}} .
+      - echo "Add your registry push command here"
+      # Example: - docker tag {{.NAME}}:{{.TAG}} your-registry/{{.NAME}}:{{.TAG}}
+      # Example: - docker push your-registry/{{.NAME}}:{{.TAG}}
