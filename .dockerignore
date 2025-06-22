@@ -6,3 +6,4 @@ Dockerfile
 .gitignore
 .env
 Taskfile.yaml
+.github

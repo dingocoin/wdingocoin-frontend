@@ -40,18 +40,17 @@ jobs:
           version: 3.x
           repo-token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build and push multi-platform Docker image
+      - name: Build and push Docker image
         if: github.event_name != 'pull_request'
         env:
-          RUN_NUMBER: ${{ github.run_number }}
-          CI: true
           OWNER: ${{ github.repository_owner }}
-        run: task build-ci
+          PUSH_TAG: ${{ github.run_number }}
+        run: |
+          task build
+          task push
 
-      - name: Build single-platform Docker image (PR only)
+      - name: Build Docker image (PR only)
         if: github.event_name == 'pull_request'
         env:
-          RUN_NUMBER: ${{ github.run_number }}
-          CI: false
           OWNER: ${{ github.repository_owner }}
-        run: task build-ci
+        run: task build

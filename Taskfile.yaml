@@ -6,22 +6,12 @@ vars:
   REGISTRY: "ghcr.io"
   OWNER: '{{.OWNER | default "dingocoin"}}'
   IMAGE_NAME: "{{.REGISTRY}}/{{.OWNER}}/{{.NAME}}"
-  PLATFORMS: "linux/amd64,linux/arm64"
-  CI:
-    sh: |
-      {{if .CI}}
-      echo true
-      {{else}}
-      echo false
-      {{end}}
-  ARCH:
-    sh: uname -m
 
 tasks:
   build:
     desc: "Build the production Docker image"
     cmds:
-      - docker build -t {{.NAME}}:{{.TAG}} .
+      - docker build -t {{.IMAGE_NAME}}:{{.TAG}} .
   
   dev-build:
     desc: "Build the development Docker image"
@@ -31,51 +21,26 @@ tasks:
   run:
     desc: "Run the production Docker container"
     cmds:
-      - docker run -p 80:80 {{.NAME}}:{{.TAG}}
+      - docker run -p 80:80 {{.IMAGE_NAME}}:{{.TAG}}
   
   dev:
     desc: "Run in development mode with hot reload"
     cmds:
       - docker run -p 3000:3000 -v $(pwd)/src:/app/src {{.NAME}}:dev
   
+  push:
+    desc: "Push the Docker image to registry"
+    vars:
+      PUSH_TAG: "{{.PUSH_TAG | default .TAG}}"
+    cmds:
+      - docker tag {{.IMAGE_NAME}}:{{.TAG}} {{.IMAGE_NAME}}:{{.PUSH_TAG}}
+      - docker push {{.IMAGE_NAME}}:{{.PUSH_TAG}}
+      - docker push {{.IMAGE_NAME}}:{{.TAG}}
+  
   clean:
     desc: "Remove Docker images and containers"
     cmds:
-      - docker stop $(docker ps -q --filter ancestor={{.NAME}}:{{.TAG}}) 2>/dev/null || true
-      - docker rm $(docker ps -aq --filter ancestor={{.NAME}}:{{.TAG}}) 2>/dev/null || true
-      - docker rmi {{.NAME}}:{{.TAG}} 2>/dev/null || true
+      - docker stop $(docker ps -q --filter ancestor={{.IMAGE_NAME}}:{{.TAG}}) 2>/dev/null || true
+      - docker rm $(docker ps -aq --filter ancestor={{.IMAGE_NAME}}:{{.TAG}}) 2>/dev/null || true
+      - docker rmi {{.IMAGE_NAME}}:{{.TAG}} 2>/dev/null || true
       - docker rmi {{.NAME}}:dev 2>/dev/null || true
-  
-  # Unified build task for both local and CI
-  build-ci:
-    desc: "Build Docker image - multi-platform with push when CI=true, single platform when CI=false"
-    vars:
-      BUILD_NUMBER: "{{.RUN_NUMBER | default .TAG}}"
-    cmds:
-      - |
-        if [ "{{.CI}}" = "true" ]; then
-          echo "Building multi-platform image and pushing to registry..."
-          docker buildx build --platform {{.PLATFORMS}} -t {{.REGISTRY}}/{{lower .OWNER}}/{{.NAME}}:{{.BUILD_NUMBER}} -t {{.REGISTRY}}/{{lower .OWNER}}/{{.NAME}}:latest --push .
-        else
-          echo "Building single-platform image for local use..."
-          ARCH=$(uname -m)
-          if [ "$ARCH" = "x86_64" ]; then
-            PLATFORM="linux/amd64"
-          elif [ "$ARCH" = "aarch64" ] || [ "$ARCH" = "arm64" ]; then
-            PLATFORM="linux/arm64"
-          else
-            echo "Unsupported architecture: $ARCH, defaulting to linux/amd64"
-            PLATFORM="linux/amd64"
-          fi
-          echo "Detected architecture: $ARCH"
-          echo "Target platform: $PLATFORM"
-          docker buildx build --platform $PLATFORM -t {{.REGISTRY}}/{{lower .OWNER}}/{{.NAME}}:{{.BUILD_NUMBER}} -t {{.REGISTRY}}/{{lower .OWNER}}/{{.NAME}}:latest --load .
-        fi
-
-  # Run the CI-built image
-  run-ci:
-    desc: "Run the Docker image built by build-ci"
-    vars:
-      BUILD_NUMBER: "{{.RUN_NUMBER | default .TAG}}"
-    cmds:
-      - docker run -p 80:80 {{.REGISTRY}}/{{lower .OWNER}}/{{.NAME}}:{{.BUILD_NUMBER}}
