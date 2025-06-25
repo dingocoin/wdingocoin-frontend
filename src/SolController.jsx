@@ -589,7 +589,7 @@ function SolController() {
                   </b>
                 </p>
                 <p>
-                  (* Deposits require 120 confirmations (about 2 hours).)
+                <p>(* Deposits require 60 confirmations (about an hour).)</p>
                   <br />
                   (* The amount here is after a fee deduction of 1% of total
                   deposited amount)
