@@ -462,6 +462,7 @@ function BscController() {
           unconfirmedAmount: mintBalance.unconfirmedAmount,
           depositedAmount: mintBalance.depositedAmount,
           mintedAmount: mintBalance.mintedAmount,
+          daysUntilExpiration: mintBalance.daysUntilExpiration,
         },
       ]);
       setHasMintDepositAddress(true);
@@ -494,7 +495,8 @@ function BscController() {
         ) {
           burnHistory[i].status = null;
         } else if (
-          burnHistories.filter((x) => x[i].status === null).length > 0
+          burnHistories.filter((x) => x.length > 0).length <
+          burnHistories.length
         ) {
           burnHistory[i].status = null;
         } else if (
@@ -546,7 +548,7 @@ function BscController() {
     if (wallet !== null && aliveNodes !== null) {
       const refreshLoop = () => {
         refresh();
-        setTimeout(refreshLoop, 3000);
+        setTimeout(refreshLoop, 15000);
       };
       refreshLoop();
     }
@@ -801,6 +803,7 @@ function BscController() {
                       <th className="short-header">Unconfirmed</th>
                       <th className="short-header">Confirmed*</th>
                       <th className="short-header">Minted</th>
+                      <th className="short-header">Status</th>
                       <th className="short-header">Action</th>
                     </tr>
                   </thead>
@@ -818,13 +821,17 @@ function BscController() {
                           <td className="short-header">
                             {fromSatoshi(x.mintedAmount)}
                           </td>
+                          {/* <td className={`short-header ${statusClass}`}>
+                            <span>{statusText}</span>
+                            <br />
+                            <small>{x.isExpired ? 'Expired' : `${x.daysUntilExpiration} days left`}</small>
+                          </td> */}
                           <td className="short-header">
-                            {BigInt(x.mintedAmount) <
-                              BigInt(x.depositedAmount) && (
+                            {BigInt(x.mintedAmount) < BigInt(x.depositedAmount) ? (
                               <button onClick={() => onMint(x.depositAddress)}>
                                 Mint balance
                               </button>
-                            )}
+                            ) : null}
                           </td>
                         </tr>
                       );
@@ -832,7 +839,7 @@ function BscController() {
                   </tbody>
                 </table>
                 <br />
-                <p>(* Deposits require 120 confirmations (about 2 hours).)</p>
+                <p>(* Deposits require 60 confirmations (about an hour).)</p>
                 <p>
                   (* The amount here is after a fee deduction of 10 Dingocoins +
                   1% of total deposited amount thereafter)

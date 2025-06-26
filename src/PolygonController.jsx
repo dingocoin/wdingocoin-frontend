@@ -15,7 +15,7 @@ const AUTHORITY_NODES = [
     walletAddress: "0x72321c492EAA102C331C0EB64c9E4a72036f2f1d",
   },
   {
-    location: "wdingo.triplezen.org",
+    location: "mn5.dingocoin.com",
     port: 8443,
     walletAddress: "0x90c5951c839de0CC80138D7A47a3F1F0eE5828Ba",
   },
@@ -30,9 +30,9 @@ const AUTHORITY_NODES = [
     walletAddress: "0xfA3ba79a0266Fd0354547E4807b19bC8Cef0696C",
   },
   {
-    location: "mn3.dingocoin.com",
+    location: "mn4.dingocoin.com",
     port: 8443,
-    walletAddress: "0x171922Ad1C671AaAB08A2EEFDf1F92cDB78cA6b4",
+    walletAddress: "0xDD67CeAA42224808eEC2eb8A0f4D57DD3fe9fa4C",
   },
 ];
 const AUTHORITY_THRESHOLD = 3;
@@ -546,7 +546,7 @@ function PolygonController() {
     if (wallet !== null && aliveNodes !== null) {
       const refreshLoop = () => {
         refresh();
-        setTimeout(refreshLoop, 3000);
+        setTimeout(refreshLoop, 15000);
       };
       refreshLoop();
     }
@@ -807,11 +807,15 @@ function PolygonController() {
                       <th className="short-header">Unconfirmed</th>
                       <th className="short-header">Confirmed*</th>
                       <th className="short-header">Minted</th>
+                      <th className="short-header">Status</th>
                       <th className="short-header">Action</th>
                     </tr>
                   </thead>
                   <tbody>
                     {mintDepositAddresses.map((x) => {
+                      let statusClass = '';
+                      let statusText = '';
+                      
                       return (
                         <tr key={x.depositAddress}>
                           <td className="long-header">{x.depositAddress}</td>
@@ -824,13 +828,16 @@ function PolygonController() {
                           <td className="short-header">
                             {fromSatoshi(x.mintedAmount)}
                           </td>
+                          <td className={`short-header ${statusClass}`}>
+                            <span>{statusText}</span>
+                            <br />
+                          </td>
                           <td className="short-header">
-                            {BigInt(x.mintedAmount) <
-                              BigInt(x.depositedAmount) && (
-                                <button onClick={() => onMint(x.depositAddress)}>
-                                  Mint balance
-                                </button>
-                              )}
+                            {BigInt(x.mintedAmount) < BigInt(x.depositedAmount) ? (
+                              <button onClick={() => onMint(x.depositAddress)}>
+                                Mint balance
+                              </button>
+                            ) : null}
                           </td>
                         </tr>
                       );
@@ -838,7 +845,7 @@ function PolygonController() {
                   </tbody>
                 </table>
                 <br />
-                <p>(* Deposits require 120 confirmations (about 2 hours).)</p>
+                <p>(* Deposits require 60 confirmations (about an hour).)</p>
                 <p>
                   (* The amount here is after a fee deduction of 10 Dingocoins +
                   1% of total deposited amount thereafter)
