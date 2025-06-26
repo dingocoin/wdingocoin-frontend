@@ -38,10 +38,10 @@ task run
 
 ### 3. Using Published Images
 
-GitHub Actions automatically builds and publishes multi-platform Docker images (AMD64 + ARM64) to GitHub Container Registry using Taskfile:
+GitHub Actions automatically builds and publishes Docker images to GitHub Container Registry:
 
 ```sh
-# Pull and run the latest image (auto-detects your platform)
+# Pull and run the latest image
 docker pull ghcr.io/dingocoin/wdingocoin-frontend:latest
 docker run -p 80:80 ghcr.io/dingocoin/wdingocoin-frontend:latest
 
@@ -52,22 +52,62 @@ docker run -p 80:80 ghcr.io/dingocoin/wdingocoin-frontend:123
 
 ### 4. Taskfile Commands
 
+The project includes a comprehensive Taskfile for automation. All tasks support custom variables:
+
+#### Development Tasks
 ```sh
-# Local development
-task dev-build    # Build development image
-task dev          # Run development container
+# Build development Docker image (hot reload enabled)
+task dev-build
 
-# Production
-task build        # Build production image (single platform)
-task build-ci     # Build with CI variable (see below)
-task run          # Run production container
+# Run development container with hot reload
+task dev
+# Container runs on http://localhost:3000
+# Source code is mounted for live updates
+```
 
-# CI/CD (used by GitHub Actions)
-CI=true task build-ci    # Multi-platform build and push
-CI=false task build-ci   # Single-platform build (local testing)
+#### Production Tasks
+```sh
+# Build production Docker image (multi-stage, nginx)
+task build
 
-# Maintenance
-task clean        # Clean up Docker images
+# Run production container
+task run
+# Default: http://localhost:80
+# Custom port: PORT=8080 task run
+```
+
+#### Registry Tasks
+```sh
+# Push image to registry (default: ghcr.io/dingocoin/wdingocoin-frontend)
+task push
+# Push with custom tag: PUSH_TAG=v1.0.0 task push
+# Push to custom registry: OWNER=myorg task push
+```
+
+#### Maintenance Tasks
+```sh
+# Clean up Docker images and containers
+task clean
+# Removes all project-related images and stopped containers
+```
+
+#### Custom Variables
+All tasks support these variables:
+```sh
+# Custom registry owner (default: dingocoin)
+OWNER=myorg task build
+
+# Custom port for production (default: 80)
+PORT=8080 task run
+
+# Custom image tag (default: latest)
+TAG=v1.0.0 task build
+
+# Custom registry (default: ghcr.io)
+REGISTRY=docker.io task build
+
+# Custom push tag (for task push)
+PUSH_TAG=v1.0.0 task push
 ```
 
 ### 5. Git Workflow
@@ -86,7 +126,8 @@ git push origin master
 ### 6. Troubleshooting
 - **OpenSSL/webpack error**: If you see `ERR_OSSL_EVP_UNSUPPORTED`, it's handled in Docker by setting `NODE_OPTIONS=--openssl-legacy-provider`.
 - **node-sass issues**: This project uses `sass` (Dart Sass). If you see errors about `node-sass`, ensure your dependencies are up to date and `node-sass` is not installed.
-- **Multi-platform builds**: Uses Docker Buildx to build for both AMD64 and ARM64 architectures.
+- **Port conflicts**: Use `PORT=8080 task run` to run on a different port.
+- **Registry conflicts**: Use `OWNER=myorg task build` to build for a different registry owner.
 
 ---
 
