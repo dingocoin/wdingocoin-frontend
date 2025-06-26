@@ -6,6 +6,7 @@ vars:
   REGISTRY: "ghcr.io"
   OWNER: '{{.OWNER | default "dingocoin"}}'
   IMAGE_NAME: "{{.REGISTRY}}/{{lower .OWNER}}/{{.NAME}}"
+  PORT: "{{.PORT | default \"80\"}}"
 
 tasks:
   build:
@@ -21,12 +22,12 @@ tasks:
   run:
     desc: "Run the production Docker container"
     cmds:
-      - docker run -p 80:80 {{.IMAGE_NAME}}:{{.TAG}}
+      - docker run --rm -p {{.PORT}}:80 {{.IMAGE_NAME}}:{{.TAG}}
   
   dev:
     desc: "Run in development mode with hot reload"
     cmds:
-      - docker run -p 3000:3000 -v $(pwd)/src:/app/src {{.NAME}}:dev
+      - docker run --rm -p 3000:3000 -v $(pwd)/src:/app/src {{.NAME}}:dev
   
   push:
     desc: "Push the Docker image to registry"

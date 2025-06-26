@@ -4,7 +4,7 @@ FROM node:18-alpine
 WORKDIR /app
 
 # Install dependencies for node-gyp (needed for some packages)
-RUN apk add --no-cache python3 make g++
+RUN apk add --no-cache python3 make g++ py3-pip py3-setuptools
 
 # Copy package files first for better caching
 COPY package.json yarn.lock ./
@@ -18,5 +18,5 @@ COPY . .
 # Expose port 3000 for development server
 EXPOSE 3000
 
-# Start development server
-CMD ["yarn", "start"] 
+# Start development server (fix OpenSSL issue)
+CMD ["sh", "-c", "NODE_OPTIONS=--openssl-legacy-provider yarn start"]
