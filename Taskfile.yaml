@@ -1,0 +1,47 @@
+version: 3
+
+vars:
+  NAME: "wdingocoin-frontend"
+  TAG: "latest"
+  REGISTRY: "ghcr.io"
+  OWNER: '{{.OWNER | default "dingocoin"}}'
+  IMAGE_NAME: "{{.REGISTRY}}/{{lower .OWNER}}/{{.NAME}}"
+  PORT: "{{.PORT | default \"80\"}}"
+
+tasks:
+  build:
+    desc: "Build the production Docker image"
+    cmds:
+      - docker build -t {{.IMAGE_NAME}}:{{.TAG}} .
+  
+  dev-build:
+    desc: "Build the development Docker image"
+    cmds:
+      - docker build -f Dockerfile.dev -t {{.NAME}}:dev .
+  
+  run:
+    desc: "Run the production Docker container"
+    cmds:
+      - docker run --rm -p {{.PORT}}:80 {{.IMAGE_NAME}}:{{.TAG}}
+  
+  dev:
+    desc: "Run in development mode with hot reload"
+    cmds:
+      - docker run --rm -p 3000:3000 -v $(pwd)/src:/app/src {{.NAME}}:dev
+  
+  push:
+    desc: "Push the Docker image to registry"
+    vars:
+      PUSH_TAG: "{{.PUSH_TAG | default .TAG}}"
+    cmds:
+      - docker tag {{.IMAGE_NAME}}:{{.TAG}} {{.IMAGE_NAME}}:{{.PUSH_TAG}}
+      - docker push {{.IMAGE_NAME}}:{{.PUSH_TAG}}
+      - docker push {{.IMAGE_NAME}}:{{.TAG}}
+  
+  clean:
+    desc: "Remove Docker images and containers"
+    cmds:
+      - docker stop $(docker ps -q --filter ancestor={{.IMAGE_NAME}}:{{.TAG}}) 2>/dev/null || true
+      - docker rm $(docker ps -aq --filter ancestor={{.IMAGE_NAME}}:{{.TAG}}) 2>/dev/null || true
+      - docker rmi {{.IMAGE_NAME}}:{{.TAG}} 2>/dev/null || true
+      - docker rmi {{.NAME}}:dev 2>/dev/null || true
