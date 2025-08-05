@@ -207,24 +207,51 @@ export const useBridge = (selectedNetwork: NetworkKey) => {
               const baseBurn = successfulBurnHistories.find(history => history.length > i)?.[i];
               if (!baseBurn) continue;
 
-              // Determine consensus status across all nodes
+              // Determine consensus status across all nodes using majority-based consensus
               let consensusStatus: BurnHistoryItem['status'] = null;
 
-              if (successfulBurnHistories.length < nodesToQuery.length) {
-                // Not all nodes responded - mark as not submitted
-                consensusStatus = null;
-              } else if (successfulBurnHistories.some(history => history[i]?.status === null)) {
-                // Any node shows null status - mark as not submitted
-                consensusStatus = null;
-              } else if (successfulBurnHistories.some(history => history[i]?.status === 'SUBMITTED')) {
-                // Any node shows submitted status - mark as submitted
-                consensusStatus = 'SUBMITTED';
-              } else if (successfulBurnHistories.every(history => history[i]?.status === 'APPROVED')) {
-                // All nodes show approved - mark as approved
+              // Count status votes from responding nodes
+              const statusCounts = {
+                'not_submitted': 0,
+                'SUBMITTED': 0,
+                'APPROVED': 0
+              };
+
+              successfulBurnHistories.forEach(history => {
+                const status = history[i]?.status;
+                if (status !== undefined) {
+                  if (status === null) {
+                    statusCounts['not_submitted']++;
+                  } else if (status === 'SUBMITTED') {
+                    statusCounts['SUBMITTED']++;
+                  } else if (status === 'APPROVED') {
+                    statusCounts['APPROVED']++;
+                  }
+                }
+              });
+
+              const totalResponses = successfulBurnHistories.length;
+              const majority = Math.ceil(totalResponses / 2);
+
+              // Determine consensus based on majority vote
+              if (statusCounts['APPROVED'] >= majority) {
+                // Majority shows approved - mark as approved
                 consensusStatus = 'APPROVED';
-              } else {
-                // Mixed states - mark as not submitted for safety
+              } else if (statusCounts['SUBMITTED'] >= majority) {
+                // Majority shows submitted - mark as submitted
+                consensusStatus = 'SUBMITTED';
+              } else if (statusCounts['not_submitted'] >= majority) {
+                // Majority shows not submitted - mark as not submitted
                 consensusStatus = null;
+              } else {
+                // No clear majority - use the highest priority status found
+                if (statusCounts['APPROVED'] > 0) {
+                  consensusStatus = 'APPROVED';
+                } else if (statusCounts['SUBMITTED'] > 0) {
+                  consensusStatus = 'SUBMITTED';
+                } else {
+                  consensusStatus = null;
+                }
               }
 
               consensusBurnHistory.push({
