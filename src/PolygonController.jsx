@@ -40,6 +40,94 @@ const authorityLink = (x) => {
   return `https://${x.location}:${x.port}`;
 };
 
+const queryDepositAddressWithConsensus = async (mintAddress, aliveNodes) => {
+  if (aliveNodes.length === 0) {
+    return {
+      depositAddress: null,
+      goodNodes: [],
+      consensusCount: 0,
+      hasConsensus: false
+    };
+  }
+
+  // Query all alive nodes for the deposit address
+  const nodeResponses = await Promise.allSettled(
+    aliveNodes.map(async (nodeIndex) => {
+      const node = AUTHORITY_NODES[nodeIndex];
+      try {
+        const response = await post(`${authorityLink(node)}/queryMintBalance`, {
+          mintAddress
+        });
+        return {
+          nodeIndex,
+          depositAddress: response.data?.depositAddress || null,
+          data: response.data
+        };
+      } catch (error) {
+        return {
+          nodeIndex,
+          depositAddress: null,
+          data: null,
+          error
+        };
+      }
+    })
+  );
+
+  // Extract successful responses
+  const successfulResponses = nodeResponses
+    .filter(result => result.status === 'fulfilled')
+    .map(result => result.value)
+    .filter(response => response.depositAddress !== null);
+
+  if (successfulResponses.length === 0) {
+    return {
+      depositAddress: null,
+      goodNodes: [],
+      consensusCount: 0,
+      hasConsensus: false
+    };
+  }
+
+  // Group responses by deposit address
+  const addressGroups = new Map();
+  
+  successfulResponses.forEach(response => {
+    const address = response.depositAddress;
+    if (!addressGroups.has(address)) {
+      addressGroups.set(address, { nodes: [], data: response.data });
+    }
+    addressGroups.get(address).nodes.push(response.nodeIndex);
+  });
+
+  // Find the address with the most consensus
+  let bestConsensus = {
+    depositAddress: null,
+    goodNodes: [],
+    consensusCount: 0
+  };
+
+  for (const [address, group] of addressGroups) {
+    if (group.nodes.length > bestConsensus.consensusCount) {
+      bestConsensus = {
+        depositAddress: address,
+        goodNodes: group.nodes,
+        consensusCount: group.nodes.length
+      };
+    }
+  }
+
+  // Check if we have sufficient consensus (meets threshold)
+  const hasConsensus = bestConsensus.consensusCount >= AUTHORITY_THRESHOLD;
+
+  return {
+    depositAddress: hasConsensus ? bestConsensus.depositAddress : null,
+    goodNodes: hasConsensus ? bestConsensus.goodNodes : [],
+    consensusCount: bestConsensus.consensusCount,
+    hasConsensus
+  };
+};
+
 const CONTRACT_ADDRESS = "0x033babac01c4e3915cf71d24b6bfb58e606fdb80";
 
 const toSatoshi = (x) => {
@@ -450,22 +538,39 @@ function PolygonController() {
   };
 
   const refresh = async () => {
-    const mintBalance = (
-      await post(`${randAuthorityLink()}/queryMintBalance`, {
-        mintAddress: wallet,
-      })
-    ).data;
-    if (mintBalance !== null && mintBalance !== undefined) {
-      setMintDepositAddresses([
-        {
-          depositAddress: mintBalance.depositAddress,
-          unconfirmedAmount: mintBalance.unconfirmedAmount,
-          depositedAmount: mintBalance.depositedAmount,
-          mintedAmount: mintBalance.mintedAmount,
-        },
-      ]);
-      setHasMintDepositAddress(true);
+    // Query deposit address with consensus
+    const consensusResult = await queryDepositAddressWithConsensus(wallet, aliveNodes);
+    
+    if (consensusResult.hasConsensus && consensusResult.depositAddress) {
+      // Use one of the good nodes to get the full deposit data
+      const goodNode = AUTHORITY_NODES[consensusResult.goodNodes[0]];
+      const mintBalance = (
+        await post(`${authorityLink(goodNode)}/queryMintBalance`, {
+          mintAddress: wallet,
+        })
+      ).data;
+      
+      if (mintBalance !== null && mintBalance !== undefined) {
+        setMintDepositAddresses([
+          {
+            depositAddress: mintBalance.depositAddress,
+            unconfirmedAmount: mintBalance.unconfirmedAmount,
+            depositedAmount: mintBalance.depositedAmount,
+            mintedAmount: mintBalance.mintedAmount,
+          },
+        ]);
+        setHasMintDepositAddress(true);
+      } else {
+        setMintDepositAddresses([]);
+        setHasMintDepositAddress(false);
+      }
+    } else if (consensusResult.consensusCount > 0) {
+      // Partial consensus - log warning but continue with empty state
+      console.warn(`Polygon: Insufficient consensus for deposit address. Only ${consensusResult.consensusCount} out of ${AUTHORITY_THRESHOLD} required nodes agree.`);
+      setMintDepositAddresses([]);
+      setHasMintDepositAddress(false);
     } else {
+      // No deposit address found
       setMintDepositAddresses([]);
       setHasMintDepositAddress(false);
     }
