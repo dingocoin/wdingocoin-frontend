@@ -1,6 +1,7 @@
 import BigInt from 'big-integer';
 import bs58 from 'bs58';
-import crypto from 'crypto';
+// @ts-ignore
+import crypto from 'crypto-browserify';
 import { NetworkConfig, MintDepositAddress, BurnHistoryItem } from '../types/bridge';
 
 const DECIMALS = 8;
