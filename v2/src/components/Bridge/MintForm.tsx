@@ -3,6 +3,7 @@ import { useAccount, useChainId } from 'wagmi';
 import { formatAmount, fromSatoshi, getNetworkDisplayName } from '../../utils/bridge';
 import { NETWORKS } from '../../config/networks';
 import { NetworkKey } from '../../config/networks';
+import { NetworkConfig } from '../../types/bridge';
 import { MintDepositAddress } from '../../types/bridge';
 import BigInt from 'big-integer';
 
@@ -30,7 +31,7 @@ export default function MintForm({
   const [error, setError] = useState('');
   const [copySuccess, setCopySuccess] = useState(false);
 
-  const networkConfig = NETWORKS[network];
+  const networkConfig = NETWORKS[network] as NetworkConfig;
   const isCorrectNetwork = networkConfig && chainId === networkConfig.chainId;
   const hasMintDepositAddress = mintDepositAddresses.length > 0;
   const allNodesOnline = aliveNodes.length === networkConfig.authorityNodes.length;

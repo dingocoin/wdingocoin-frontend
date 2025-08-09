@@ -1,6 +1,7 @@
 import React from 'react';
 import { useSwitchChain } from 'wagmi';
 import { NETWORKS, NetworkKey } from '../../config/networks';
+import { NetworkConfig } from '../../types/bridge';
 
 interface NetworkSelectorProps {
   selectedNetwork: NetworkKey;
@@ -11,7 +12,7 @@ export default function NetworkSelector({ selectedNetwork, onNetworkChange }: Ne
   const { switchChain } = useSwitchChain();
 
   const handleNetworkChange = async (network: NetworkKey) => {
-    const networkConfig = NETWORKS[network];
+    const networkConfig = NETWORKS[network] as NetworkConfig;
     if (networkConfig) {
       try {
         await switchChain({ chainId: networkConfig.chainId });

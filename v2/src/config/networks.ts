@@ -1,4 +1,5 @@
 import { NetworkConfig } from '../types/bridge';
+import { ENABLE_TESTNET } from './env';
 
 export const BSC_CONFIG: NetworkConfig = {
   name: 'Binance Smart Chain',
@@ -129,7 +130,7 @@ export const TBNB_CONFIG: NetworkConfig = {
 export const NETWORKS = {
   bsc: BSC_CONFIG,
   polygon: POLYGON_CONFIG,
-  tbnb: TBNB_CONFIG,
+  ...(ENABLE_TESTNET ? { tbnb: TBNB_CONFIG } : {}),
 } as const;
 
 export type NetworkKey = keyof typeof NETWORKS; 

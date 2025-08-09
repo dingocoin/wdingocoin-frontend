@@ -1,6 +1,7 @@
 import React from 'react';
 import { useBridge } from '../../hooks/useBridge';
 import { NETWORKS, NetworkKey } from '../../config/networks';
+import { NetworkConfig } from '../../types/bridge';
 import { AuthorityNode } from '../../types/bridge';
 
 interface BridgeStatusProps {
@@ -14,7 +15,7 @@ export default function BridgeStatus({ network }: BridgeStatusProps) {
     isLoading,
   } = useBridge(network);
 
-  const networkConfig = NETWORKS[network];
+  const networkConfig = NETWORKS[network] as NetworkConfig;
   const nodeHealth = aliveNodes.length / 5 * 100;
 
   return (

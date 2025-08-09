@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useAccount, useChainId, useReadContract, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
 import { parseEther, formatEther, encodeFunctionData } from 'viem';
 import { NetworkKey, NETWORKS } from '../config/networks';
-import { MintDepositAddress, BurnHistoryItem, BridgeStats } from '../types/bridge';
+import { MintDepositAddress, BurnHistoryItem, BridgeStats, NetworkConfig } from '../types/bridge';
 import { 
   post, 
   getAliveNodes, 
@@ -14,6 +14,7 @@ import {
   queryDepositAddressWithConsensus,
   getConsensusAuthorityLink
 } from '../utils/bridge';
+import { useAliveNodesQuery, useBridgeStatsQuery } from './bridgeQueries';
 
 // Contract ABI for wDingocoin token
 const CONTRACT_ABI = [
@@ -52,7 +53,7 @@ const CONTRACT_ABI = [
 export const useBridge = (selectedNetwork: NetworkKey) => {
   const { address, isConnected } = useAccount();
   const chainId = useChainId();
-  const network = NETWORKS[selectedNetwork];
+  const network = NETWORKS[selectedNetwork] as NetworkConfig;
   
   // State
   const [aliveNodes, setAliveNodes] = useState<number[]>([]);
@@ -88,21 +89,11 @@ export const useBridge = (selectedNetwork: NetworkKey) => {
     hash: mintData,
   });
 
-  // Initialize alive nodes
+  // Background-cached alive nodes via React Query
+  const { data: cachedAliveNodes } = useAliveNodesQuery(selectedNetwork);
   useEffect(() => {
-    const initAliveNodes = async () => {
-      try {
-        const alive = await getAliveNodes(network);
-        setAliveNodes(alive);
-      } catch (err) {
-        console.error('Failed to initialize alive nodes:', err);
-      }
-    };
-
-    if (network) {
-      initAliveNodes();
-    }
-  }, [network]);
+    if (cachedAliveNodes) setAliveNodes(cachedAliveNodes);
+  }, [cachedAliveNodes]);
 
   // Refresh data after successful mint transaction
   useEffect(() => {
@@ -268,14 +259,13 @@ export const useBridge = (selectedNetwork: NetworkKey) => {
           }
         }
 
-        // Fetch stats - prefer good nodes if available
+        // Stats will be provided by background cache; still attempt a foreground refresh if needed
         try {
           const statsLink = goodNodes.length > 0 ? getConsensusAuthorityLink(network, goodNodes) : getStableAuthorityLink(network);
           const statsResponse = await post(`${statsLink}/stats`, {});
           setStats(statsResponse.data);
         } catch (err) {
-          console.error('Failed to fetch stats:', err);
-          // Don't set error for stats failure as it's not critical
+          // Silent: background query will populate when available
         }
 
       } catch (err) {

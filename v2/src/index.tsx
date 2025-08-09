@@ -6,6 +6,7 @@ import { RainbowKitProvider } from '@rainbow-me/rainbowkit';
 import { config } from './config/wagmi';
 import ErrorBoundary from './components/ErrorBoundary';
 import App from './App';
+import BridgeDataProvider from './components/Bridge/BridgeDataProvider';
 import './index.css';
 
 // Import RainbowKit styles
@@ -48,7 +49,9 @@ root.render(
       <WagmiProvider config={config}>
         <QueryClientProvider client={queryClient}>
           <RainbowKitProvider>
-            <App />
+            <BridgeDataProvider>
+              <App />
+            </BridgeDataProvider>
           </RainbowKitProvider>
         </QueryClientProvider>
       </WagmiProvider>
