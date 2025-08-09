@@ -8,10 +8,10 @@ export default function Navbar() {
   return (
     <nav className="bg-dark-900 text-white px-4 py-3">
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <img src="/logo192.png" alt="Dingocoin Logo" className="h-8 w-8" />
+        <Link to="/" className="flex items-center gap-2 hover:opacity-90 transition-opacity">
+          <img src={`${process.env.PUBLIC_URL}/wDingocoin.png`} alt="wDingocoin Logo" className="h-8 w-8" />
           <span className="font-bold text-lg sm:text-xl">wDingocoin Bridge</span>
-        </div>
+        </Link>
         
         {/* Desktop Navigation */}
         <div className="hidden md:flex gap-6">

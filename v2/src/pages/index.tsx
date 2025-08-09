@@ -1,39 +1,8 @@
 import React from 'react';
-import { ArrowRight, Shield, Zap, Globe, TrendingUp, Coins, Layers } from 'lucide-react';
+import { ArrowRight, TrendingUp } from 'lucide-react';
 
 export default function HomePage() {
-  const features = [
-    {
-      icon: Shield,
-      title: 'Secure & Trustless',
-      description: 'Multi-signature custody with transparent operations',
-      color: 'text-green-600',
-      bgColor: 'bg-green-50',
-      borderColor: 'border-green-200'
-    },
-    {
-      icon: Zap,
-      title: 'Lightning Fast',
-      description: 'Cross-chain transfers in minutes, not hours',
-      color: 'text-primary-600', 
-      bgColor: 'bg-primary-50',
-      borderColor: 'border-primary-200'
-    },
-    {
-      icon: Globe,
-      title: 'Multi-Chain Support',
-      description: 'BSC, Polygon, and more networks supported',
-      color: 'text-secondary-600',
-      bgColor: 'bg-secondary-50', 
-      borderColor: 'border-secondary-200'
-    }
-  ];
-
-  const stats = [
-    { label: 'Networks Supported', value: '3+', icon: Layers },
-    { label: 'Total Value Bridged', value: '$2.1M+', icon: TrendingUp },
-    { label: 'Successful Transactions', value: '15,000+', icon: Coins }
-  ];
+  // Minimal landing: hero + ecosystem + CTA
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100">
@@ -74,62 +43,6 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* Stats Section */}
-      <div className="bg-white py-12 sm:py-16 animate-slide-up">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-8">
-            {stats.map((stat, index) => (
-              <div 
-                key={index} 
-                className="text-center group cursor-pointer animate-slide-up p-4 sm:p-6 rounded-xl hover:bg-gray-50 transition-all duration-300"
-                style={{animationDelay: `${index * 0.2}s`}}
-              >
-                <div className="w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-3 sm:mb-4 bg-gradient-to-r from-primary-500 to-secondary-500 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                  <stat.icon className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
-                </div>
-                <div className="text-2xl sm:text-3xl font-bold text-dark-900 mb-2 group-hover:text-primary-600 transition-colors duration-200">
-                  {stat.value}
-                </div>
-                <div className="text-sm sm:text-base text-dark-600 font-medium">{stat.label}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* Features Section */}
-      <div className="py-12 sm:py-16 lg:py-20 bg-gradient-to-r from-gray-50 to-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12 sm:mb-16 animate-slide-up">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-dark-900 mb-4 px-2">
-              Why Choose <span className="text-gradient">wDingocoin Bridge</span>?
-            </h2>
-            <p className="text-lg sm:text-xl text-dark-600 max-w-2xl mx-auto px-4">
-              Built with security, speed, and user experience as our top priorities
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-            {features.map((feature, index) => (
-              <div 
-                key={index}
-                className={`card-interactive p-6 sm:p-8 text-center border-2 ${feature.borderColor} animate-slide-up group`}
-                style={{animationDelay: `${index * 0.3}s`}}
-              >
-                <div className={`w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-4 sm:mb-6 rounded-2xl flex items-center justify-center ${feature.bgColor} group-hover:scale-110 transition-transform duration-300`}>
-                  <feature.icon className={`w-6 h-6 sm:w-8 sm:h-8 ${feature.color}`} />
-                </div>
-                <h3 className="text-lg sm:text-xl font-bold text-dark-900 mb-3 sm:mb-4 group-hover:text-primary-600 transition-colors duration-200">
-                  {feature.title}
-                </h3>
-                <p className="text-sm sm:text-base text-dark-600 leading-relaxed">
-                  {feature.description}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
 
       {/* Network Support Section */}
       <div className="py-12 sm:py-16 lg:py-20 bg-dark-900 text-white">
@@ -175,9 +88,6 @@ export default function HomePage() {
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 sm:mb-6 px-2">
             Ready to Bridge Your Dingocoin?
           </h2>
-          <p className="text-lg sm:text-xl mb-6 sm:mb-8 opacity-90 px-4">
-            Join thousands of users who trust wDingocoin Bridge for secure cross-chain transfers
-          </p>
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center max-w-md sm:max-w-none mx-auto">
             <a 
               href="/bridge"
