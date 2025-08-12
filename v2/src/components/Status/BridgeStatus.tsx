@@ -3,6 +3,7 @@ import { useBridge } from '../../hooks/useBridge';
 import { NETWORKS, NetworkKey } from '../../config/networks';
 import { NetworkConfig } from '../../types/bridge';
 import { AuthorityNode } from '../../types/bridge';
+import { formatAmount } from '../../utils/bridge';
 
 interface BridgeStatusProps {
   network: NetworkKey;
@@ -14,6 +15,9 @@ export default function BridgeStatus({ network }: BridgeStatusProps) {
     stats: bridgeStats,
     isLoading,
   } = useBridge(network);
+
+  // Debug logging for component stats
+  console.log('📊 BridgeStatus received stats:', bridgeStats);
 
   const networkConfig = NETWORKS[network] as NetworkConfig;
   const nodeHealth = aliveNodes.length / 5 * 100;
@@ -72,26 +76,15 @@ export default function BridgeStatus({ network }: BridgeStatusProps) {
           {/* Bridge Statistics */}
           <div>
             <h4 className="text-lg font-semibold mb-3 text-dark-900">Bridge Statistics</h4>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="bg-gray-50 p-4 rounded-lg">
-                <div className="text-sm text-dark-600">Total Supply</div>
-                <div className="text-2xl font-bold text-dark-900">
-                  {bridgeStats?.totalSupply || '0'} DINGO
+            <div className="grid grid-cols-1 gap-4">
+              <div className="bg-gray-50 p-4 rounded-lg text-center">
+                <div className="text-sm text-dark-600">Total wDingocoin Supply</div>
+                <div className="text-3xl font-bold text-dark-900">
+                  {bridgeStats?.totalSupply ? formatAmount(bridgeStats.totalSupply) : '0'} DINGO
                 </div>
-              </div>
-              
-              <div className="bg-gray-50 p-4 rounded-lg">
-                <div className="text-sm text-dark-600">Unconfirmed Deposits</div>
-                <div className="text-2xl font-bold text-dark-900">
-                  {bridgeStats?.unconfirmedDeposits?.totalDepositedAmount || '0'} DINGO
-                </div>
-              </div>
-              
-              <div className="bg-gray-50 p-4 rounded-lg">
-                <div className="text-sm text-dark-600">Approved Withdrawals</div>
-                <div className="text-2xl font-bold text-dark-900">
-                  {bridgeStats?.withdrawals?.totalApprovedAmount || '0'} DINGO
-                </div>
+                {!bridgeStats && (
+                  <div className="text-xs text-dark-400 mt-1">Loading from blockchain...</div>
+                )}
               </div>
             </div>
           </div>

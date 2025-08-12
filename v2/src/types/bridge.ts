@@ -34,6 +34,10 @@ export interface BridgeStats {
   };
 }
 
+export interface SimpleBridgeStats {
+  totalSupply: string;
+}
+
 export interface NetworkConfig {
   name: string;
   chainId: number;

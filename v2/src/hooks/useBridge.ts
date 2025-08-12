@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useAccount, useChainId, useReadContract, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
 import { parseEther, formatEther, encodeFunctionData } from 'viem';
 import { NetworkKey, NETWORKS } from '../config/networks';
-import { MintDepositAddress, BurnHistoryItem, BridgeStats, NetworkConfig } from '../types/bridge';
+import { MintDepositAddress, BurnHistoryItem, BridgeStats, NetworkConfig, SimpleBridgeStats } from '../types/bridge';
 import { 
   post, 
   getAliveNodes, 
@@ -21,6 +21,13 @@ const CONTRACT_ABI = [
   {
     inputs: [{ internalType: "address", name: "account", type: "address" }],
     name: "balanceOf",
+    outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "totalSupply",
     outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
     stateMutability: "view",
     type: "function",
@@ -60,7 +67,7 @@ export const useBridge = (selectedNetwork: NetworkKey) => {
   const [goodNodes, setGoodNodes] = useState<number[]>([]);
   const [mintDepositAddresses, setMintDepositAddresses] = useState<MintDepositAddress[]>([]);
   const [burnHistory, setBurnHistory] = useState<BurnHistoryItem[]>([]);
-  const [stats, setStats] = useState<BridgeStats | null>(null);
+  const [stats, setStats] = useState<SimpleBridgeStats | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -74,6 +81,30 @@ export const useBridge = (selectedNetwork: NetworkKey) => {
       enabled: !!address,
     },
   });
+
+  const { data: contractTotalSupply, error: contractError, isLoading: contractLoading } = useReadContract({
+    address: network.contractAddress as `0x${string}`,
+    abi: CONTRACT_ABI,
+    functionName: 'totalSupply',
+    chainId: network.chainId,
+    query: {
+      refetchInterval: 15000, // Refetch every 15 seconds to match stats
+      retry: 3,
+      retryDelay: 1000,
+    },
+  });
+
+  // Debug logging for contract total supply
+  useEffect(() => {
+    console.log('🔍 Contract Debug:', {
+      contractTotalSupply,
+      contractError,
+      contractLoading,
+      contractAddress: network.contractAddress,
+      chainId: network.chainId,
+      currentChainId: chainId
+    });
+  }, [contractTotalSupply, contractError, contractLoading, network.contractAddress, network.chainId, chainId]);
 
   // Contract writes
   const { writeContract: writeBurnContract, data: burnData } = useWriteContract();
@@ -94,6 +125,19 @@ export const useBridge = (selectedNetwork: NetworkKey) => {
   useEffect(() => {
     if (cachedAliveNodes) setAliveNodes(cachedAliveNodes);
   }, [cachedAliveNodes]);
+
+  // Simple: just set stats when contract total supply is available
+  useEffect(() => {
+    if (contractTotalSupply) {
+      const simpleStats: SimpleBridgeStats = {
+        totalSupply: contractTotalSupply.toString()
+      };
+      setStats(simpleStats);
+      console.log('✅ Set stats with contract total supply:', contractTotalSupply.toString());
+    } else {
+      console.log('⏳ Waiting for contract total supply...');
+    }
+  }, [contractTotalSupply]);
 
   // Refresh data after successful mint transaction
   useEffect(() => {
@@ -128,7 +172,7 @@ export const useBridge = (selectedNetwork: NetworkKey) => {
     if (!address || !isConnected) {
       setMintDepositAddresses([]);
       setBurnHistory([]);
-      setStats(null);
+      // Don't clear stats - total supply should always be available regardless of wallet connection
       return;
     }
 
@@ -259,14 +303,8 @@ export const useBridge = (selectedNetwork: NetworkKey) => {
           }
         }
 
-        // Stats will be provided by background cache; still attempt a foreground refresh if needed
-        try {
-          const statsLink = goodNodes.length > 0 ? getConsensusAuthorityLink(network, goodNodes) : getStableAuthorityLink(network);
-          const statsResponse = await post(`${statsLink}/stats`, {});
-          setStats(statsResponse.data);
-        } catch (err) {
-          // Silent: background query will populate when available
-        }
+        // Stats are now handled by the simple stats effect above
+        // No need for complex authority node consensus for basic display stats
 
       } catch (err) {
         console.error('Failed to refresh data:', err);

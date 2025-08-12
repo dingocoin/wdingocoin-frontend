@@ -6,6 +6,7 @@ import MintForm from "../components/Bridge/MintForm";
 import BurnForm from "../components/Bridge/BurnForm";
 import { useBridge } from "../hooks/useBridge";
 import { NetworkKey } from "../config/networks";
+import { formatAmount } from "../utils/bridge";
 
 export default function BridgePage() {
   const { address } = useAccount();
@@ -123,16 +124,10 @@ export default function BridgePage() {
                 {aliveNodes.length}/5
               </div>
             </div>
-            <div className="bg-gray-50 p-4 rounded-lg">
-              <div className="text-sm text-dark-600">Total Supply</div>
+            <div className="bg-gray-50 p-4 rounded-lg text-center">
+              <div className="text-sm text-dark-600">Total wDingocoin Supply</div>
               <div className="text-2xl font-bold text-dark-900">
-                {bridgeStats?.totalSupply || '0'} DINGO
-              </div>
-            </div>
-            <div className="bg-gray-50 p-4 rounded-lg">
-              <div className="text-sm text-dark-600">Unconfirmed Deposits</div>
-              <div className="text-2xl font-bold text-dark-900">
-                {bridgeStats?.unconfirmedDeposits?.totalDepositedAmount || '0'} DINGO
+                {bridgeStats?.totalSupply ? formatAmount(bridgeStats.totalSupply) : '0'} DINGO
               </div>
             </div>
           </div>
