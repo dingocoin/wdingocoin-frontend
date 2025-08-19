@@ -17,6 +17,7 @@ export default function Navbar() {
         <div className="hidden md:flex gap-6">
           <Link to="/" className="hover:text-primary-400 transition-colors">Home</Link>
           <Link to="/bridge" className="hover:text-primary-400 transition-colors">Bridge</Link>
+          <Link to="/history" className="hover:text-primary-400 transition-colors">History</Link>
           <Link to="/status" className="hover:text-primary-400 transition-colors">Status</Link>
         </div>
 
@@ -46,6 +47,13 @@ export default function Navbar() {
               onClick={() => setIsMenuOpen(false)}
             >
               Bridge
+            </Link>
+            <Link 
+              to="/history" 
+              className="hover:text-primary-400 transition-colors py-2"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              History
             </Link>
             <Link 
               to="/status" 
