@@ -38,7 +38,8 @@
     "build": "NODE_OPTIONS='--max-old-space-size=4096' react-app-rewired build",
     "test": "react-app-rewired test",
     "eject": "react-scripts eject",
-    "serve": "npx serve -s build"
+    "serve": "npx serve -s build",
+    "prod": "npx serve -s build -p 80"
   },
   "eslintConfig": {
     "extends": [
