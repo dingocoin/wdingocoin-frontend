@@ -303,6 +303,7 @@ export default function TransactionHistory({
               <li><strong>Unwrap:</strong> Convert wDingocoin tokens back to native Dingocoin</li>
               <li>Wrap transactions require deposits to the generated address</li>
               <li>Unwrap transactions need manual submission for withdrawal</li>
+              <li>History loads once per session - use the refresh button to update</li>
             </ul>
           </div>
         </div>

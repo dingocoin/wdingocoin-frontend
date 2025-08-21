@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { useAccount } from 'wagmi';
+import { RefreshCw } from 'lucide-react';
 import ConnectButton from "../components/Wallet/ConnectButton";
 import NetworkSelector from "../components/Bridge/NetworkSelector";
 import TransactionHistory from "../components/Bridge/TransactionHistory";
-import { useBridge } from "../hooks/useBridge";
+import { useBridgeHistory } from "../hooks/useBridgeHistory";
 import { NetworkKey } from "../config/networks";
 
 export default function HistoryPage() {
@@ -14,7 +15,8 @@ export default function HistoryPage() {
     mintDepositAddresses,
     burnHistory,
     isLoading,
-  } = useBridge(selectedNetwork);
+    refreshHistory,
+  } = useBridgeHistory(selectedNetwork);
 
   return (
     <div className="max-w-4xl mx-auto py-12 px-4">
@@ -31,10 +33,22 @@ export default function HistoryPage() {
 
       {address && (
         <>
-          <NetworkSelector
-            selectedNetwork={selectedNetwork}
-            onNetworkChange={setSelectedNetwork}
-          />
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+            <NetworkSelector
+              selectedNetwork={selectedNetwork}
+              onNetworkChange={setSelectedNetwork}
+            />
+            
+            <button
+              onClick={refreshHistory}
+              disabled={isLoading}
+              className="btn-outline flex items-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              title="Refresh transaction history"
+            >
+              <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
+              <span>Refresh</span>
+            </button>
+          </div>
 
           <div className="mt-8">
             <TransactionHistory
