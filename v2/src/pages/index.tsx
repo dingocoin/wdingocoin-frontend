@@ -1,5 +1,87 @@
 import React from 'react';
-import { ArrowRight, TrendingUp } from 'lucide-react';
+import { ArrowRight, TrendingUp, Copy, Check } from 'lucide-react';
+import { BSC_CONFIG, POLYGON_CONFIG } from '../config/networks';
+
+// Contract Address Card Component
+interface ContractAddressCardProps {
+  networkName: string;
+  networkSymbol: string;
+  contractAddress: string;
+  explorerUrl: string;
+  bgColor: string;
+  iconBg: string;
+  textColor: string;
+}
+
+function ContractAddressCard({
+  networkName,
+  networkSymbol,
+  contractAddress,
+  explorerUrl,
+  bgColor,
+  iconBg,
+  textColor
+}: ContractAddressCardProps) {
+  const [copied, setCopied] = React.useState(false);
+
+  const copyToClipboard = async () => {
+    try {
+      await navigator.clipboard.writeText(contractAddress);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error('Failed to copy text: ', err);
+    }
+  };
+
+  return (
+    <div className={`${bgColor} rounded-xl p-6 border hover:shadow-lg transition-shadow duration-300`}>
+      <div className="flex items-center mb-4">
+        <div className={`w-12 h-12 ${iconBg} rounded-lg flex items-center justify-center mr-4`}>
+          <span className="text-white font-bold text-lg">{networkSymbol}</span>
+        </div>
+        <div>
+          <h3 className="text-lg font-semibold text-dark-900">{networkName}</h3>
+          <p className="text-sm text-dark-600">wDingocoin Contract</p>
+        </div>
+      </div>
+
+      {/* Contract Address */}
+      <div className="mb-4">
+        <label className="text-sm font-medium text-dark-700 mb-2 block">Contract Address</label>
+        <div className="bg-white rounded-lg p-3 border-2 border-gray-200">
+          <div className="flex items-center justify-between">
+            <code className="text-sm font-mono text-dark-800 break-all flex-1 mr-2">
+              {contractAddress}
+            </code>
+            <button
+              onClick={copyToClipboard}
+              className={`flex-shrink-0 p-2 rounded-md transition-colors duration-200 ${
+                copied 
+                  ? 'bg-green-100 text-green-600' 
+                  : `hover:${bgColor} ${textColor} hover:text-opacity-80`
+              }`}
+              title="Copy to clipboard"
+            >
+              {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Explorer Link */}
+      <a
+        href={`${explorerUrl}/address/${contractAddress}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        className={`inline-flex items-center ${textColor} hover:text-opacity-80 transition-colors duration-200 text-sm font-medium`}
+      >
+        View on Explorer
+        <ArrowRight className="w-4 h-4 ml-1" />
+      </a>
+    </div>
+  );
+}
 
 export default function HomePage() {
   // Minimal landing: hero + ecosystem + CTA
@@ -78,6 +160,51 @@ export default function HomePage() {
               <h3 className="text-base sm:text-lg font-semibold mb-1 sm:mb-2">Coming Soon</h3>
               <p className="text-gray-400 text-xs sm:text-sm">Additional networks in development</p>
             </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Contract Addresses Section */}
+      <div className="py-12 sm:py-16 lg:py-20 bg-white">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-8 sm:mb-12">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 animate-slide-up">
+              <span className="text-gradient">Contract</span>{' '}
+              <span className="text-dark-900">Addresses</span>
+            </h2>
+            <p className="text-lg sm:text-xl text-dark-600 mb-8 max-w-2xl mx-auto animate-slide-up">
+              Verified smart contract addresses for wDingocoin on each supported network
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
+            {/* BSC Contract */}
+            <ContractAddressCard
+              networkName={BSC_CONFIG.name}
+              networkSymbol="BSC"
+              contractAddress="0x9b208b117B2C4F76C1534B6f006b033220a681A4"
+              explorerUrl={BSC_CONFIG.explorerUrl}
+              bgColor="bg-yellow-50"
+              iconBg="bg-yellow-500"
+              textColor="text-yellow-600"
+            />
+
+            {/* Polygon Contract */}
+            <ContractAddressCard
+              networkName={POLYGON_CONFIG.name}
+              networkSymbol="POL"
+              contractAddress="0x033babac01c4e3915cf71d24b6bfb58e606fdb80"
+              explorerUrl={POLYGON_CONFIG.explorerUrl}
+              bgColor="bg-purple-50"
+              iconBg="bg-purple-600"
+              textColor="text-purple-600"
+            />
+          </div>
+
+          <div className="text-center mt-8 sm:mt-12">
+            <p className="text-sm text-dark-500">
+              Always verify contract addresses on the official blockchain explorers before interacting
+            </p>
           </div>
         </div>
       </div>
