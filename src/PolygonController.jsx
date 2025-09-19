@@ -40,13 +40,29 @@ const authorityLink = (x) => {
   return `https://${x.location}:${x.port}`;
 };
 
+async function post(link, data) {
+  const controller = new AbortController();
+  setTimeout(() => controller.abort(), 5000);
+  return (
+    await fetch(link, {
+      withCredentials: true,
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+      signal: controller.signal,
+    })
+  ).json();
+}
+
 const queryDepositAddressWithConsensus = async (mintAddress, aliveNodes) => {
   if (aliveNodes.length === 0) {
     return {
       depositAddress: null,
       goodNodes: [],
       consensusCount: 0,
-      hasConsensus: false
+      hasConsensus: false,
     };
   }
 
@@ -56,19 +72,19 @@ const queryDepositAddressWithConsensus = async (mintAddress, aliveNodes) => {
       const node = AUTHORITY_NODES[nodeIndex];
       try {
         const response = await post(`${authorityLink(node)}/queryMintBalance`, {
-          mintAddress
+          mintAddress,
         });
         return {
           nodeIndex,
           depositAddress: response.data?.depositAddress || null,
-          data: response.data
+          data: response.data,
         };
       } catch (error) {
         return {
           nodeIndex,
           depositAddress: null,
           data: null,
-          error
+          error,
         };
       }
     })
@@ -76,23 +92,23 @@ const queryDepositAddressWithConsensus = async (mintAddress, aliveNodes) => {
 
   // Extract successful responses
   const successfulResponses = nodeResponses
-    .filter(result => result.status === 'fulfilled')
-    .map(result => result.value)
-    .filter(response => response.depositAddress !== null);
+    .filter((result) => result.status === "fulfilled")
+    .map((result) => result.value)
+    .filter((response) => response.depositAddress !== null);
 
   if (successfulResponses.length === 0) {
     return {
       depositAddress: null,
       goodNodes: [],
       consensusCount: 0,
-      hasConsensus: false
+      hasConsensus: false,
     };
   }
 
   // Group responses by deposit address
   const addressGroups = new Map();
-  
-  successfulResponses.forEach(response => {
+
+  successfulResponses.forEach((response) => {
     const address = response.depositAddress;
     if (!addressGroups.has(address)) {
       addressGroups.set(address, { nodes: [], data: response.data });
@@ -104,7 +120,7 @@ const queryDepositAddressWithConsensus = async (mintAddress, aliveNodes) => {
   let bestConsensus = {
     depositAddress: null,
     goodNodes: [],
-    consensusCount: 0
+    consensusCount: 0,
   };
 
   for (const [address, group] of addressGroups) {
@@ -112,7 +128,7 @@ const queryDepositAddressWithConsensus = async (mintAddress, aliveNodes) => {
       bestConsensus = {
         depositAddress: address,
         goodNodes: group.nodes,
-        consensusCount: group.nodes.length
+        consensusCount: group.nodes.length,
       };
     }
   }
@@ -124,7 +140,7 @@ const queryDepositAddressWithConsensus = async (mintAddress, aliveNodes) => {
     depositAddress: hasConsensus ? bestConsensus.depositAddress : null,
     goodNodes: hasConsensus ? bestConsensus.goodNodes : [],
     consensusCount: bestConsensus.consensusCount,
-    hasConsensus
+    hasConsensus,
   };
 };
 
@@ -439,7 +455,6 @@ const CONTRACT_ABI = [
   },
 ];
 
-
 function OnboardingButton(props) {
   const [buttonText, setButtonText] = React.useState(
     "Connect MetaMask wallet to convert"
@@ -490,29 +505,13 @@ function OnboardingButton(props) {
 function PolygonController() {
   const web3 = new Web3("https://polygon-rpc.com/");
   const contract = new web3.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS);
-  async function post(link, data) {
-    const controller = new AbortController();
-    setTimeout(() => controller.abort(), 5000);
-    return (
-      await fetch(link, {
-        withCredentials: true,
-        method: "POST",
-        signal: controller.signal,
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      })
-    ).json();
-  }
 
   const [wallet, setWallet] = React.useState(null);
   const [aliveNodes, setAliveNodes] = React.useState(null);
   const randAuthorityLink = () => {
     const node =
       AUTHORITY_NODES[
-      aliveNodes[Math.floor(Math.random() * aliveNodes.length)]
+        aliveNodes[Math.floor(Math.random() * aliveNodes.length)]
       ];
     return `https://${node.location}:${node.port}`;
   };
@@ -539,8 +538,11 @@ function PolygonController() {
 
   const refresh = async () => {
     // Query deposit address with consensus
-    const consensusResult = await queryDepositAddressWithConsensus(wallet, aliveNodes);
-    
+    const consensusResult = await queryDepositAddressWithConsensus(
+      wallet,
+      aliveNodes
+    );
+
     if (consensusResult.hasConsensus && consensusResult.depositAddress) {
       // Use one of the good nodes to get the full deposit data
       const goodNode = AUTHORITY_NODES[consensusResult.goodNodes[0]];
@@ -549,7 +551,7 @@ function PolygonController() {
           mintAddress: wallet,
         })
       ).data;
-      
+
       if (mintBalance !== null && mintBalance !== undefined) {
         setMintDepositAddresses([
           {
@@ -566,7 +568,9 @@ function PolygonController() {
       }
     } else if (consensusResult.consensusCount > 0) {
       // Partial consensus - log warning but continue with empty state
-      console.warn(`Polygon: Insufficient consensus for deposit address. Only ${consensusResult.consensusCount} out of ${AUTHORITY_THRESHOLD} required nodes agree.`);
+      console.warn(
+        `Polygon: Insufficient consensus for deposit address. Only ${consensusResult.consensusCount} out of ${AUTHORITY_THRESHOLD} required nodes agree.`
+      );
       setMintDepositAddresses([]);
       setHasMintDepositAddress(false);
     } else {
@@ -630,13 +634,13 @@ function PolygonController() {
             .then(() => {
               alive.push(parseInt(i));
             })
-            .catch(() => { });
+            .catch(() => {});
         }
         setAliveNodes(alive);
       }
     })();
   });
-  
+
   React.useEffect(() => {
     (async () => {
       if (aliveNodes !== null && stats === null) {
@@ -702,9 +706,12 @@ function PolygonController() {
 
   const onMint = async (depositAddress) => {
     if (window.ethereum) {
-      const chainId = await window.ethereum.request({ method: 'eth_chainId' });
-      if (chainId !== '0x89') { // Polygon network ID
-         return window.confirm('WARNING: Metamask is not set to Polygon network!')
+      const chainId = await window.ethereum.request({ method: "eth_chainId" });
+      if (chainId !== "0x89") {
+        // Polygon network ID
+        return window.confirm(
+          "WARNING: Metamask is not set to Polygon network!"
+        );
       }
     }
     const mintTransactionInfos = Array(AUTHORITY_NODES.length).fill(undefined);
@@ -716,7 +723,7 @@ function PolygonController() {
           .then((r) => {
             mintTransactionInfos[i] = r.data;
           })
-          .catch(() => { });
+          .catch(() => {});
       })
     );
     const availableMintTransactionInfos = mintTransactionInfos.filter(
@@ -918,9 +925,9 @@ function PolygonController() {
                   </thead>
                   <tbody>
                     {mintDepositAddresses.map((x) => {
-                      let statusClass = '';
-                      let statusText = '';
-                      
+                      let statusClass = "";
+                      let statusText = "";
+
                       return (
                         <tr key={x.depositAddress}>
                           <td className="long-header">{x.depositAddress}</td>
@@ -938,7 +945,8 @@ function PolygonController() {
                             <br />
                           </td>
                           <td className="short-header">
-                            {BigInt(x.mintedAmount) < BigInt(x.depositedAmount) ? (
+                            {BigInt(x.mintedAmount) <
+                            BigInt(x.depositedAmount) ? (
                               <button onClick={() => onMint(x.depositAddress)}>
                                 Mint balance
                               </button>
@@ -1059,10 +1067,10 @@ function PolygonController() {
                                   {x.status === null
                                     ? "Not submitted"
                                     : x.status === "SUBMITTED"
-                                      ? "Submitted"
-                                      : x.status === "APPROVED"
-                                        ? "Approved"
-                                        : "UNKNOWN"}
+                                    ? "Submitted"
+                                    : x.status === "APPROVED"
+                                    ? "Approved"
+                                    : "UNKNOWN"}
                                 </td>
                                 <td className="short-header">
                                   {x.status !== null ? null : (
@@ -1096,7 +1104,6 @@ function PolygonController() {
           </section>
         </div>
       )}
-
       <hr />
       <section className="section-a">
         <h3>Polygon Custodian Status</h3> <br />
@@ -1115,9 +1122,14 @@ function PolygonController() {
           </b>
         </h5>
         {aliveNodes !== null && (
-          <p> <br />
-            <small>(Nodes not online? Our load protection system was probably triggered
-              by too many of your requests. Please try again in a few minutes.)</small>
+          <p>
+            {" "}
+            <br />
+            <small>
+              (Nodes not online? Our load protection system was probably
+              triggered by too many of your requests. Please try again in a few
+              minutes.)
+            </small>
           </p>
         )}
         {aliveNodes !== null && stats === null && (
