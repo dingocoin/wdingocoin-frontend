@@ -5,7 +5,15 @@ vars:
   TAG: "latest"
   REGISTRY: "ghcr.io"
   OWNER: '{{.OWNER | default "dingocoin"}}'
-  IMAGE_NAME: "{{.REGISTRY}}/{{lower .OWNER}}/{{.NAME}}"
+  CURRENT_BRANCH:
+    sh: git rev-parse --abbrev-ref HEAD
+  BRANCH: '{{.BRANCH | default .CURRENT_BRANCH}}'
+  IMAGE_NAME: |
+    {{- if eq .BRANCH "master" -}}
+    {{.REGISTRY}}/{{lower .OWNER}}/{{.NAME}}
+    {{- else -}}
+    {{.REGISTRY}}/{{lower .OWNER}}/{{.NAME}}-{{lower .BRANCH}}
+    {{- end -}}
   PORT: "{{.PORT | default \"80\"}}"
 
 tasks:
