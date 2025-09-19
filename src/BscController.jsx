@@ -42,13 +42,29 @@ const authorityLink = (x) => {
   return `https://${x.location}:${x.port}`;
 };
 
+async function post(link, data) {
+  const controller = new AbortController();
+  setTimeout(() => controller.abort(), 5000);
+  return (
+    await fetch(link, {
+      withCredentials: true,
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+      signal: controller.signal,
+    })
+  ).json();
+}
+
 const queryDepositAddressWithConsensus = async (mintAddress, aliveNodes) => {
   if (aliveNodes.length === 0) {
     return {
       depositAddress: null,
       goodNodes: [],
       consensusCount: 0,
-      hasConsensus: false
+      hasConsensus: false,
     };
   }
 
@@ -58,19 +74,19 @@ const queryDepositAddressWithConsensus = async (mintAddress, aliveNodes) => {
       const node = AUTHORITY_NODES[nodeIndex];
       try {
         const response = await post(`${authorityLink(node)}/queryMintBalance`, {
-          mintAddress
+          mintAddress,
         });
         return {
           nodeIndex,
           depositAddress: response.data?.depositAddress || null,
-          data: response.data
+          data: response.data,
         };
       } catch (error) {
         return {
           nodeIndex,
           depositAddress: null,
           data: null,
-          error
+          error,
         };
       }
     })
@@ -78,23 +94,23 @@ const queryDepositAddressWithConsensus = async (mintAddress, aliveNodes) => {
 
   // Extract successful responses
   const successfulResponses = nodeResponses
-    .filter(result => result.status === 'fulfilled')
-    .map(result => result.value)
-    .filter(response => response.depositAddress !== null);
+    .filter((result) => result.status === "fulfilled")
+    .map((result) => result.value)
+    .filter((response) => response.depositAddress !== null);
 
   if (successfulResponses.length === 0) {
     return {
       depositAddress: null,
       goodNodes: [],
       consensusCount: 0,
-      hasConsensus: false
+      hasConsensus: false,
     };
   }
 
   // Group responses by deposit address
   const addressGroups = new Map();
-  
-  successfulResponses.forEach(response => {
+
+  successfulResponses.forEach((response) => {
     const address = response.depositAddress;
     if (!addressGroups.has(address)) {
       addressGroups.set(address, { nodes: [], data: response.data });
@@ -106,7 +122,7 @@ const queryDepositAddressWithConsensus = async (mintAddress, aliveNodes) => {
   let bestConsensus = {
     depositAddress: null,
     goodNodes: [],
-    consensusCount: 0
+    consensusCount: 0,
   };
 
   for (const [address, group] of addressGroups) {
@@ -114,7 +130,7 @@ const queryDepositAddressWithConsensus = async (mintAddress, aliveNodes) => {
       bestConsensus = {
         depositAddress: address,
         goodNodes: group.nodes,
-        consensusCount: group.nodes.length
+        consensusCount: group.nodes.length,
       };
     }
   }
@@ -126,7 +142,7 @@ const queryDepositAddressWithConsensus = async (mintAddress, aliveNodes) => {
     depositAddress: hasConsensus ? bestConsensus.depositAddress : null,
     goodNodes: hasConsensus ? bestConsensus.goodNodes : [],
     consensusCount: bestConsensus.consensusCount,
-    hasConsensus
+    hasConsensus,
   };
 };
 
@@ -169,7 +185,6 @@ const isValidDingocoinAddress = (x) => {
   const checksum = sha256(sha256(raw.slice(0, 21)));
   return raw.slice(21, 25).equals(checksum.slice(0, 4));
 };
-
 
 const CONTRACT_ABI = [
   { inputs: [], stateMutability: "nonpayable", type: "constructor" },
@@ -490,22 +505,6 @@ function OnboardingButton(props) {
 function BscController() {
   const web3 = new Web3("https://bsc-dataseed.binance.org");
   const contract = new web3.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS);
-  async function post(link, data) {
-    const controller = new AbortController();
-    setTimeout(() => controller.abort(), 5000);
-    return (
-      await fetch(link, {
-        withCredentials: true,
-        method: "POST",
-        signal: controller.signal,
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      })
-    ).json();
-  }
 
   const [wallet, setWallet] = React.useState(null);
   const [aliveNodes, setAliveNodes] = React.useState(null);
@@ -539,8 +538,11 @@ function BscController() {
 
   const refresh = async () => {
     // Query deposit address with consensus
-    const consensusResult = await queryDepositAddressWithConsensus(wallet, aliveNodes);
-    
+    const consensusResult = await queryDepositAddressWithConsensus(
+      wallet,
+      aliveNodes
+    );
+
     if (consensusResult.hasConsensus && consensusResult.depositAddress) {
       // Use one of the good nodes to get the full deposit data
       const goodNode = AUTHORITY_NODES[consensusResult.goodNodes[0]];
@@ -549,7 +551,7 @@ function BscController() {
           mintAddress: wallet,
         })
       ).data;
-      
+
       if (mintBalance !== null && mintBalance !== undefined) {
         setMintDepositAddresses([
           {
@@ -567,7 +569,9 @@ function BscController() {
       }
     } else if (consensusResult.consensusCount > 0) {
       // Partial consensus - log warning but continue with empty state
-      console.warn(`BSC: Insufficient consensus for deposit address. Only ${consensusResult.consensusCount} out of ${AUTHORITY_THRESHOLD} required nodes agree.`);
+      console.warn(
+        `BSC: Insufficient consensus for deposit address. Only ${consensusResult.consensusCount} out of ${AUTHORITY_THRESHOLD} required nodes agree.`
+      );
       setMintDepositAddresses([]);
       setHasMintDepositAddress(false);
     } else {
@@ -860,7 +864,7 @@ function BscController() {
           <OnboardingButton onAccountChange={onAccountChange} />
         </Container>
       </header>
-      <br /> <br />	
+      <br /> <br />
       {wallet && aliveNodes && (
         <div>
           <section className="section-b">
@@ -932,7 +936,8 @@ function BscController() {
                             <small>{x.isExpired ? 'Expired' : `${x.daysUntilExpiration} days left`}</small>
                           </td> */}
                           <td className="short-header">
-                            {BigInt(x.mintedAmount) < BigInt(x.depositedAmount) ? (
+                            {BigInt(x.mintedAmount) <
+                            BigInt(x.depositedAmount) ? (
                               <button onClick={() => onMint(x.depositAddress)}>
                                 Mint balance
                               </button>
@@ -1090,7 +1095,6 @@ function BscController() {
           </section>
         </div>
       )}
-
       <hr />
       <section className="section-a">
         <h3>BSC Custodian Status</h3> <br />
@@ -1109,15 +1113,20 @@ function BscController() {
           </b>
         </h5>
         {aliveNodes !== null && (
-          <p> <br />
-          <small>(Nodes not online? Our load protection system was probably triggered
-          by too many of your requests. Please try again in a few minutes.)</small>
+          <p>
+            {" "}
+            <br />
+            <small>
+              (Nodes not online? Our load protection system was probably
+              triggered by too many of your requests. Please try again in a few
+              minutes.)
+            </small>
           </p>
         )}
         {aliveNodes !== null && stats === null && (
           <div className="loader"></div>
         )}
-       <br />
+        <br />
         {stats && (
           <div>
             <table>
