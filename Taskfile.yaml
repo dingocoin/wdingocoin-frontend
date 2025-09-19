@@ -8,11 +8,12 @@ vars:
   CURRENT_BRANCH:
     sh: git rev-parse --abbrev-ref HEAD
   BRANCH: '{{.BRANCH | default .CURRENT_BRANCH}}'
-  IMAGE_NAME: |
+  IMAGE_NAME: "{{.REGISTRY}}/{{lower .OWNER}}/{{.NAME}}"
+  IMAGE_TAG: |
     {{- if eq .BRANCH "master" -}}
-    {{.REGISTRY}}/{{lower .OWNER}}/{{.NAME}}
+    {{.TAG}}
     {{- else -}}
-    {{.REGISTRY}}/{{lower .OWNER}}/{{.NAME}}-{{lower .BRANCH}}
+    {{lower .BRANCH}}-{{.TAG}}
     {{- end -}}
   PORT: "{{.PORT | default \"80\"}}"
 
@@ -20,7 +21,7 @@ tasks:
   build:
     desc: "Build the production Docker image"
     cmds:
-      - docker build -t {{.IMAGE_NAME}}:{{.TAG}} .
+      - docker build -t {{.IMAGE_NAME}}:{{.IMAGE_TAG}} .
   
   dev-build:
     desc: "Build the development Docker image"
@@ -30,7 +31,7 @@ tasks:
   run:
     desc: "Run the production Docker container"
     cmds:
-      - docker run --rm -p {{.PORT}}:80 {{.IMAGE_NAME}}:{{.TAG}}
+      - docker run --rm -p {{.PORT}}:80 {{.IMAGE_NAME}}:{{.IMAGE_TAG}}
   
   dev:
     desc: "Run in development mode with hot reload"
@@ -40,16 +41,16 @@ tasks:
   push:
     desc: "Push the Docker image to registry"
     vars:
-      PUSH_TAG: "{{.PUSH_TAG | default .TAG}}"
+      PUSH_TAG: "{{.PUSH_TAG | default .IMAGE_TAG}}"
     cmds:
-      - docker tag {{.IMAGE_NAME}}:{{.TAG}} {{.IMAGE_NAME}}:{{.PUSH_TAG}}
+      - docker tag {{.IMAGE_NAME}}:{{.IMAGE_TAG}} {{.IMAGE_NAME}}:{{.PUSH_TAG}}
       - docker push {{.IMAGE_NAME}}:{{.PUSH_TAG}}
-      - docker push {{.IMAGE_NAME}}:{{.TAG}}
+      - docker push {{.IMAGE_NAME}}:{{.IMAGE_TAG}}
   
   clean:
     desc: "Remove Docker images and containers"
     cmds:
-      - docker stop $(docker ps -q --filter ancestor={{.IMAGE_NAME}}:{{.TAG}}) 2>/dev/null || true
-      - docker rm $(docker ps -aq --filter ancestor={{.IMAGE_NAME}}:{{.TAG}}) 2>/dev/null || true
-      - docker rmi {{.IMAGE_NAME}}:{{.TAG}} 2>/dev/null || true
+      - docker stop $(docker ps -q --filter ancestor={{.IMAGE_NAME}}:{{.IMAGE_TAG}}) 2>/dev/null || true
+      - docker rm $(docker ps -aq --filter ancestor={{.IMAGE_NAME}}:{{.IMAGE_TAG}}) 2>/dev/null || true
+      - docker rmi {{.IMAGE_NAME}}:{{.IMAGE_TAG}} 2>/dev/null || true
       - docker rmi {{.NAME}}:dev 2>/dev/null || true

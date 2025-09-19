@@ -98,8 +98,8 @@ All tasks support these variables:
 OWNER=myorg task build
 
 # Custom branch name (default: auto-detected from git)
-# When not "master", branch name is appended to image name
-BRANCH=v2 task build  # overrides auto-detection, builds ghcr.io/dingocoin/wdingocoin-frontend-v2
+# When not "master", branch name is prepended to the tag
+BRANCH=v2 task build  # overrides auto-detection, builds ghcr.io/dingocoin/wdingocoin-frontend:v2-latest
 
 # Custom port for production (default: 80)
 PORT=8080 task run
