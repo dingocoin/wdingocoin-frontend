@@ -5,6 +5,7 @@ import BigInt from "big-integer";
 import bs58 from "bs58";
 import crypto from "crypto";
 import { Container } from "react-bootstrap";
+import { validateMintTransactionConsensus } from "./utils/consensusValidator.js";
 
 const DECIMALS = 8;
 
@@ -701,84 +702,100 @@ function PolygonController() {
   };
 
   const onMint = async (depositAddress) => {
-    if (window.ethereum) {
-      const chainId = await window.ethereum.request({ method: 'eth_chainId' });
-      if (chainId !== '0x89') { // Polygon network ID
-         return window.confirm('WARNING: Metamask is not set to Polygon network!')
+    try {
+      if (window.ethereum) {
+        const chainId = await window.ethereum.request({ method: 'eth_chainId' });
+        if (chainId !== '0x89') { // Polygon network ID
+           return window.confirm('WARNING: Metamask is not set to Polygon network!')
+        }
       }
-    }
-    const mintTransactionInfos = Array(AUTHORITY_NODES.length).fill(undefined);
-    await Promise.all(
-      AUTHORITY_NODES.map((x, i) => {
-        return post(`${authorityLink(x)}/createMintTransaction`, {
-          mintAddress: wallet,
-        })
-          .then((r) => {
-            mintTransactionInfos[i] = r.data;
+
+      const mintTransactionInfos = Array(AUTHORITY_NODES.length).fill(undefined);
+      const nodeErrors = [];
+
+      await Promise.all(
+        AUTHORITY_NODES.map((x, i) => {
+          return post(`${authorityLink(x)}/createMintTransaction`, {
+            mintAddress: wallet,
           })
-          .catch(() => { });
-      })
-    );
-    const availableMintTransactionInfos = mintTransactionInfos.filter(
-      (x) => x !== undefined
-    );
-    if (availableMintTransactionInfos.length < AUTHORITY_THRESHOLD) {
-      return alert("Failed to collect sufficient signatures for minting.");
-    }
-    if (
-      !availableMintTransactionInfos.every(
-        (x) => x.mintAddress === availableMintTransactionInfos[0].mintAddress
-      )
-    ) {
-      return alert("Consensus failure on mint address.");
-    }
-    if (
-      !availableMintTransactionInfos.every(
-        (x) => x.nonce === availableMintTransactionInfos[0].nonce
-      )
-    ) {
-      return alert("Consensus failure on mint nonce.");
-    }
-    if (
-      !availableMintTransactionInfos.every(
-        (x) => x.depositAddress === depositAddress
-      )
-    ) {
-      return alert("Consensus failure on deposit address.");
-    }
-    if (
-      !availableMintTransactionInfos.every(
-        (x) => x.mintAmount === availableMintTransactionInfos[0].mintAmount
-      )
-    ) {
-      return alert("Consensus failure on mint amount.");
-    }
-    const mintAmount = availableMintTransactionInfos[0].mintAmount;
+            .then((r) => {
+              // Validate the response structure
+              if (!r.data || !r.data.onContractVerification) {
+                nodeErrors.push(`Node ${i}: Invalid response structure`);
+                return;
+              }
+              
+              const verification = r.data.onContractVerification;
+              if (!verification.v || !verification.r || !verification.s) {
+                nodeErrors.push(`Node ${i}: Missing signature components (v: ${!!verification.v}, r: ${!!verification.r}, s: ${!!verification.s})`);
+                return;
+              }
 
-    const signV = mintTransactionInfos.map((x) =>
-      x === undefined ? "0x0" : x.onContractVerification.v
-    );
-    const signR = mintTransactionInfos.map((x) =>
-      x === undefined ? "0x0" : x.onContractVerification.r
-    );
-    const signS = mintTransactionInfos.map((x) =>
-      x === undefined ? "0x0" : x.onContractVerification.s
-    );
+              // Log signature data for debugging
+              console.log(`Node ${i} signature:`, {
+                v: verification.v,
+                r: verification.r,
+                s: verification.s,
+                mintAddress: r.data.mintAddress,
+                nonce: r.data.nonce,
+                depositAddress: r.data.depositAddress,
+                mintAmount: r.data.mintAmount
+              });
 
-    await window.ethereum.request({
-      method: "eth_sendTransaction",
-      params: [
-        {
-          from: wallet,
-          to: CONTRACT_ADDRESS,
-          data: contract.methods
-            .mint(depositAddress, mintAmount, signV, signR, signS)
-            .encodeABI(),
-        },
-      ],
-    });
+              mintTransactionInfos[i] = r.data;
+            })
+            .catch((error) => {
+              nodeErrors.push(`Node ${i}: ${error.message || 'Network error'}`);
+            });
+        })
+      );
 
-    await refresh();
+      const availableMintTransactionInfos = mintTransactionInfos.filter(
+        (x) => x !== undefined
+      );
+
+      // Enhanced error reporting
+      if (availableMintTransactionInfos.length < AUTHORITY_THRESHOLD) {
+        const errorDetails = nodeErrors.length > 0 ? 
+          `\n\nNode errors:\n${nodeErrors.join('\n')}` : '';
+        return alert(`Failed to collect sufficient signatures for minting.\nReceived: ${availableMintTransactionInfos.length}/${AUTHORITY_NODES.length}\nRequired: ${AUTHORITY_THRESHOLD}${errorDetails}`);
+      }
+
+      // Use the consensus validation utility
+      const consensusResult = validateMintTransactionConsensus(
+        availableMintTransactionInfos,
+        depositAddress,
+        AUTHORITY_THRESHOLD,
+        mintTransactionInfos
+      );
+
+      if (!consensusResult.success) {
+        return alert(consensusResult.error);
+      }
+
+      // Extract the validated data
+      const { consensusValues, signatureArrays } = consensusResult;
+      const { signV, signR, signS } = signatureArrays;
+      const mintAmount = consensusValues.mintAmount;
+
+      await window.ethereum.request({
+        method: "eth_sendTransaction",
+        params: [
+          {
+            from: wallet,
+            to: CONTRACT_ADDRESS,
+            data: contract.methods
+              .mint(depositAddress, mintAmount, signV, signR, signS)
+              .encodeABI(),
+          },
+        ],
+      });
+
+      await refresh();
+    } catch (error) {
+      console.error('Mint transaction error:', error);
+      alert(`Mint transaction failed: ${error.message || 'Unknown error'}`);
+    }
   };
 
   const onBurnDestinationChange = (e) => {

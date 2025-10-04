@@ -420,7 +420,17 @@ export const useBridge = (selectedNetwork: NetworkKey) => {
       const availableInfos = mintTransactionInfos.filter(info => info !== undefined);
       
       if (availableInfos.length < network.authorityThreshold) {
-        throw new Error(`Failed to collect sufficient signatures for minting. Got ${availableInfos.length}, need ${network.authorityThreshold}`);
+        // Collect error details for better debugging
+        const nodeErrors = [];
+        mintTransactionInfos.forEach((info, index) => {
+          if (info === undefined) {
+            nodeErrors.push(`Node ${index}: Failed to respond or invalid response`);
+          }
+        });
+        
+        const errorMessage = `Failed to collect sufficient signatures for minting. Got ${availableInfos.length}, need ${network.authorityThreshold}`;
+        const detailedError = nodeErrors.length > 0 ? `${errorMessage}\n\nNode errors:\n${nodeErrors.join('\n')}` : errorMessage;
+        throw new Error(detailedError);
       }
 
       // Verify consensus
@@ -432,6 +442,21 @@ export const useBridge = (selectedNetwork: NetworkKey) => {
         info.mintAmount === firstInfo.mintAmount
       )) {
         throw new Error('Consensus failure on mint transaction');
+      }
+
+      // Additional signature validation
+      const validSignatureCount = availableInfos.filter(info => 
+        info.onContractVerification &&
+        info.onContractVerification.v &&
+        info.onContractVerification.r &&
+        info.onContractVerification.s &&
+        info.onContractVerification.v !== "0x0" &&
+        info.onContractVerification.r !== "0x0" &&
+        info.onContractVerification.s !== "0x0"
+      ).length;
+
+      if (validSignatureCount < network.authorityThreshold) {
+        throw new Error(`Insufficient valid signatures. Got ${validSignatureCount} valid signatures, need ${network.authorityThreshold}.`);
       }
 
       const mintAmount = firstInfo.mintAmount;
