@@ -421,7 +421,7 @@ export const useBridge = (selectedNetwork: NetworkKey) => {
       
       if (availableInfos.length < network.authorityThreshold) {
         // Collect error details for better debugging
-        const nodeErrors = [];
+        const nodeErrors: string[] = [];
         mintTransactionInfos.forEach((info, index) => {
           if (info === undefined) {
             nodeErrors.push(`Node ${index}: Failed to respond or invalid response`);
